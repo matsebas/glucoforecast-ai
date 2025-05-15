@@ -48,7 +48,7 @@ export function AIAssistant() {
   const isProcessing = status === "submitted" || status === "streaming";
 
   return (
-    <Card className="w-full h-[600px] flex flex-col">
+    <Card className="w-full h-[calc(100vh-120px)] flex flex-col">
       <CardHeader>
         <CardTitle>Asistente de Diabetes</CardTitle>
         <CardDescription>
@@ -56,7 +56,7 @@ export function AIAssistant() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex-1 overflow-hidden p-0">
-        <ScrollArea className="h-[400px] p-4" ref={scrollAreaRef}>
+        <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
           {messages.map((message) => (
             <div
               key={message.id}
@@ -83,7 +83,7 @@ export function AIAssistant() {
                       return (
                         <span key={`source-${part.source.id}`}>
                           [
-                          <a href={part.source.url} target="_blank">
+                          <a href={part.source.url} target="_blank" rel="noopener noreferrer">
                             {part.source.title ?? new URL(part.source.url).hostname}
                           </a>
                           ]

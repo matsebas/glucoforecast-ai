@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertCircle, CheckCircle2, Key } from "lucide-react";
+import { useTheme } from "next-themes";
 import { useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -32,6 +33,8 @@ export default function SettingsPage() {
     password: "",
   });
   const [autoSync, setAutoSync] = useState(true);
+
+  const { theme, setTheme } = useTheme();
 
   const handleCredentialsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCredentials({
@@ -192,7 +195,11 @@ export default function SettingsPage() {
                   <Label htmlFor="dark-mode">Modo oscuro</Label>
                   <p className="text-sm text-muted-foreground">Cambie entre modo claro y oscuro</p>
                 </div>
-                <Switch id="dark-mode" />
+                <Switch
+                  id="dark-mode"
+                  checked={theme === "dark"}
+                  onCheckedChange={(value) => setTheme(value ? "dark" : "light")}
+                />
               </div>
 
               <div className="flex items-center justify-between">

@@ -1,10 +1,11 @@
-"use client"
+"use client";
 
-import { usePathname } from "next/navigation"
-import Link from "next/link"
-import { signOut } from "next-auth/react"
-import { BarChart3, FileUp, Settings, LogOut, DropletIcon, Bot } from "lucide-react"
+import { BarChart3, Bot, DropletIcon, FileUp, LogOut, Settings } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
+import { Button } from "@/components/ui/button";
 import {
   Sidebar,
   SidebarContent,
@@ -13,15 +14,14 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
-import { Button } from "@/components/ui/button"
+} from "@/components/ui/sidebar";
 
 export function AppSidebar() {
-  const pathname = usePathname()
+  const pathname = usePathname();
 
   const isActive = (path: string) => {
-    return pathname === path
-  }
+    return pathname === path;
+  };
 
   return (
     <Sidebar>
@@ -68,11 +68,15 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="p-4">
-        <Button variant="outline" className="w-full justify-start" onClick={() => signOut({ callbackUrl: "/login" })}>
+        <Button
+          variant="outline"
+          className="w-full justify-start"
+          onClick={() => signOut({ callbackUrl: "/login" })}
+        >
           <LogOut className="mr-2 h-4 w-4" />
           Cerrar sesión
         </Button>
       </SidebarFooter>
     </Sidebar>
-  )
+  );
 }

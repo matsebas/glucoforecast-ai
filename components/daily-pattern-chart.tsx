@@ -1,18 +1,27 @@
-"use client"
+"use client";
 
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from "recharts"
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 interface GlucoseReading {
-  id: number
-  userId: number
-  value: number
-  timestamp: string
-  trend?: string
-  notes?: string
+  id: number;
+  userId: number;
+  value: number;
+  timestamp: string;
+  trend?: string;
+  notes?: string;
 }
 
 interface DailyPatternChartProps {
-  data: GlucoseReading[]
+  data: GlucoseReading[];
 }
 
 export function DailyPatternChart({ data = [] }: DailyPatternChartProps) {
@@ -25,28 +34,30 @@ export function DailyPatternChart({ data = [] }: DailyPatternChartProps) {
       max: 0,
       avg: 0,
       readings: [] as number[],
-    }))
+    }));
 
   // Procesar los datos
   data.forEach((reading) => {
-    const date = new Date(reading.timestamp)
-    const hour = date.getHours()
-    hourlyData[hour].readings.push(reading.value)
-  })
+    const date = new Date(reading.timestamp);
+    const hour = date.getHours();
+    hourlyData[hour].readings.push(reading.value);
+  });
 
   // Calcular min, max y avg para cada hora
   hourlyData.forEach((hourData) => {
     if (hourData.readings.length > 0) {
-      hourData.min = Math.min(...hourData.readings)
-      hourData.max = Math.max(...hourData.readings)
-      hourData.avg = Math.round(hourData.readings.reduce((sum, val) => sum + val, 0) / hourData.readings.length)
+      hourData.min = Math.min(...hourData.readings);
+      hourData.max = Math.max(...hourData.readings);
+      hourData.avg = Math.round(
+        hourData.readings.reduce((sum, val) => sum + val, 0) / hourData.readings.length
+      );
     } else {
       // Si no hay lecturas para esta hora, usar valores predeterminados
-      hourData.min = 100
-      hourData.max = 100
-      hourData.avg = 100
+      hourData.min = 100;
+      hourData.max = 100;
+      hourData.avg = 100;
     }
-  })
+  });
 
   return (
     <ResponsiveContainer width="100%" height="100%">
@@ -62,7 +73,10 @@ export function DailyPatternChart({ data = [] }: DailyPatternChartProps) {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="hour" />
         <YAxis domain={[40, 250]} />
-        <Tooltip formatter={(value) => [`${value} mg/dL`, ""]} labelFormatter={(value) => `Hora: ${value}:00`} />
+        <Tooltip
+          formatter={(value) => [`${value} mg/dL`, ""]}
+          labelFormatter={(value) => `Hora: ${value}:00`}
+        />
         <ReferenceLine y={180} stroke="red" strokeDasharray="3 3" />
         <ReferenceLine y={70} stroke="red" strokeDasharray="3 3" />
         <Area
@@ -83,8 +97,15 @@ export function DailyPatternChart({ data = [] }: DailyPatternChartProps) {
           fillOpacity={0.3}
           name="Máximo"
         />
-        <Area type="monotone" dataKey="avg" stroke="#8884d8" fill="#8884d8" fillOpacity={0.5} name="Promedio" />
+        <Area
+          type="monotone"
+          dataKey="avg"
+          stroke="#8884d8"
+          fill="#8884d8"
+          fillOpacity={0.5}
+          name="Promedio"
+        />
       </AreaChart>
     </ResponsiveContainer>
-  )
+  );
 }

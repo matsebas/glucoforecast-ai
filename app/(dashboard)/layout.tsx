@@ -1,36 +1,34 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useSession } from "next-auth/react"
-import { useRouter } from "next/navigation"
-import { useEffect } from "react"
-import { AppSidebar } from "@/components/app-sidebar"
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
-  const { data: session, status } = useSession()
-  const router = useRouter()
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+
+import type React from "react";
+
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { status } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/login")
+      router.push("/login");
     }
-  }, [status, router])
+  }, [status, router]);
 
   if (status === "loading") {
     return (
       <div className="flex h-screen w-full items-center justify-center">
         <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
       </div>
-    )
+    );
   }
 
   if (status === "unauthenticated") {
-    return null
+    return null;
   }
 
   return (
@@ -40,5 +38,5 @@ export default function DashboardLayout({
         <main className="flex-1 overflow-x-hidden bg-muted/40 p-4 md:p-6">{children}</main>
       </div>
     </SidebarProvider>
-  )
+  );
 }

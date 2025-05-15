@@ -1,4 +1,4 @@
-import { AIAssistant } from "@/components/ai-assistant"
+import { AIAssistant } from "@/components/ai-assistant";
 
 export default function AIPage() {
   return (
@@ -11,5 +11,5 @@ export default function AIPage() {
       </div>
       <AIAssistant />
     </div>
-  )
+  );
 }

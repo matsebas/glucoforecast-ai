@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
-import { getUserGlucoseAnalysis } from "@/lib/services/glucose";
+import { getUserGlucoseAnalysis, getUserMultiPeriodGlucoseAnalysis } from "@/lib/services/glucose";
+import { TimePeriod } from "@/lib/types";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // Verificar autenticación
     const session = await auth();
@@ -15,14 +16,32 @@ export async function GET() {
     // Obtener el ID del usuario desde la sesión
     const userId = session.user.id!;
 
-    // Usar el servicio centralizado para obtener análisis de glucosa
-    const glucoseAnalysis = await getUserGlucoseAnalysis(userId);
+    // Obtener parámetros de la URL
+    const { searchParams } = new URL(request.url);
+    const period = searchParams.get('period') as TimePeriod | null;
+    const multiPeriod = searchParams.get('multiPeriod');
 
-    // Devolver la respuesta estructurada
-    return NextResponse.json({
-      readings: glucoseAnalysis.readings,
-      metrics: glucoseAnalysis.metrics,
-    });
+    // Si se solicitan múltiples períodos
+    if (multiPeriod === 'true') {
+      // Obtener los períodos solicitados o usar los predeterminados
+      const periods = searchParams.get('periods')?.split(',') as TimePeriod[] || ['day', '7days', '14days', '30days', '90days'];
+
+      // Usar el servicio para obtener análisis de glucosa para múltiples períodos
+      const multiPeriodAnalysis = await getUserMultiPeriodGlucoseAnalysis(userId, periods);
+
+      // Devolver la respuesta estructurada con múltiples períodos
+      return NextResponse.json(multiPeriodAnalysis);
+    } else {
+      // Usar el servicio centralizado para obtener análisis de glucosa para un período específico
+      const glucoseAnalysis = await getUserGlucoseAnalysis(userId, period || 'all');
+
+      // Devolver la respuesta estructurada
+      return NextResponse.json({
+        readings: glucoseAnalysis.readings,
+        metrics: glucoseAnalysis.metrics,
+        timePeriod: glucoseAnalysis.timePeriod,
+      });
+    }
   } catch (error) {
     console.error("Error al obtener datos de glucosa:", error);
     return NextResponse.json({ error: "Error al obtener datos" }, { status: 500 });

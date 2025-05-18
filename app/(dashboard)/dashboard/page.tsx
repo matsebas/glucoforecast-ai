@@ -19,6 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CsvRecord, GlucoseAnalysis } from "@/lib/types";
 
 export default function DashboardPage() {
   const [data, setData] = useState({
@@ -29,10 +30,10 @@ export default function DashboardPage() {
     timeBelowRange: 0,
     averageGlucose: 0,
     glucoseVariability: 0,
-    lastUpdate: new Date().toISOString(),
+    lastUpdate: new Date(),
     hasData: false,
     isConnected: false,
-    readings: [],
+    readings: [] as CsvRecord[],
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -43,26 +44,27 @@ export default function DashboardPage() {
   const fetchGlucoseData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/glucose");
+      const response = await fetch("/api/glucose?period=day");
 
       if (!response.ok) {
         throw new Error("Error al obtener datos");
       }
 
-      const result = await response.json();
+      const result = (await response.json()) as GlucoseAnalysis;
 
       if (result.readings && result.readings.length > 0) {
         // Obtener la lectura más reciente
         const latestReading = result.readings[result.readings.length - 1];
 
         setData({
-          currentGlucose: latestReading.value,
-          trend: latestReading.trend || "stable",
+          currentGlucose: latestReading.glucose,
+          // trend: latestReading.trend || "stable",
+          trend: "stable",
           timeInRange: result.metrics.timeInRange,
           timeAboveRange: result.metrics.timeAboveRange,
           timeBelowRange: result.metrics.timeBelowRange,
           averageGlucose: result.metrics.averageGlucose,
-          glucoseVariability: result.metrics.variability,
+          glucoseVariability: result.metrics.variability || 0,
           lastUpdate: latestReading.timestamp,
           hasData: true,
           isConnected: true,
@@ -179,11 +181,11 @@ export default function DashboardPage() {
             <CardContent>
               <div className="flex justify-between">
                 <div>
-                  <div className="text-sm font-medium text-blue-500">Bajo</div>
+                  <div className="text-sm font-medium text-red-500">Bajo</div>
                   <div className="text-xl font-bold">{data.timeBelowRange}%</div>
                 </div>
                 <div>
-                  <div className="text-sm font-medium text-red-500">Alto</div>
+                  <div className="text-sm font-medium text-orange-500">Alto</div>
                   <div className="text-xl font-bold">{data.timeAboveRange}%</div>
                 </div>
               </div>

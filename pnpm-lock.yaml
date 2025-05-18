@@ -193,7 +193,7 @@ importers:
         version: 16.5.0
       drizzle-orm:
         specifier: latest
-        version: 0.43.1(f3f2ec210218bf1dc3976aed9abd1c81)
+        version: 0.43.1(ouco2rzc42g6q3qgijja46ynxu)
       embla-carousel-react:
         specifier: 8.5.1
         version: 8.5.1(react@19.1.0)
@@ -5056,7 +5056,6 @@ packages:
 
   libsql@0.5.9:
     resolution: {integrity: sha512-FzhiExE9uiMAOa8kmiUzsIOsIwv+YiMzaEFXEq26OSpdSJREOEa13XT/N2NzJkMFOROKN+z4IBkNrcp1oQAjpQ==}
-    cpu: [x64, arm64, wasm32, arm]
     os: [darwin, linux, win32]
 
   lighthouse-logger@1.4.2:
@@ -11251,7 +11250,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.43.1(f3f2ec210218bf1dc3976aed9abd1c81):
+  drizzle-orm@0.43.1(ouco2rzc42g6q3qgijja46ynxu):
     optionalDependencies:
       '@aws-sdk/client-rds-data': 3.806.0
       '@cloudflare/workers-types': 4.20250510.0

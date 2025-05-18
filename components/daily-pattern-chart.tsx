@@ -13,11 +13,11 @@ import {
 
 interface GlucoseReading {
   id: number;
-  userId: number;
-  value: number;
-  timestamp: string;
+  userId: string;
+  glucose: number;
+  timestamp: Date;
   trend?: string;
-  notes?: string;
+  notes?: string | null;
 }
 
 interface DailyPatternChartProps {
@@ -40,7 +40,7 @@ export function DailyPatternChart({ data = [] }: DailyPatternChartProps) {
   data.forEach((reading) => {
     const date = new Date(reading.timestamp);
     const hour = date.getHours();
-    hourlyData[hour].readings.push(reading.value);
+    hourlyData[hour].readings.push(reading.glucose);
   });
 
   // Calcular min, max y avg para cada hora
@@ -70,15 +70,16 @@ export function DailyPatternChart({ data = [] }: DailyPatternChartProps) {
           bottom: 0,
         }}
       >
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="hour" />
-        <YAxis domain={[40, 250]} />
+        <CartesianGrid strokeDasharray="1 1" stroke="#e0dfdf" />
+        <XAxis dataKey="hour" fontSize={12} />
+        <YAxis domain={[40, 250]} fontSize={12} />
         <Tooltip
           formatter={(value) => [`${value} mg/dL`, ""]}
           labelFormatter={(value) => `Hora: ${value}:00`}
+          contentStyle={{ fontSize: 12 }}
         />
-        <ReferenceLine y={180} stroke="red" strokeDasharray="3 3" />
-        <ReferenceLine y={70} stroke="red" strokeDasharray="3 3" />
+        <ReferenceLine y={180} stroke="green" strokeDasharray="5 5" />
+        <ReferenceLine y={70} stroke="green" strokeDasharray="5 5" />
         <Area
           type="monotone"
           dataKey="min"

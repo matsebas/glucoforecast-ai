@@ -50,9 +50,21 @@ export interface GlucoseMetrics {
   variability?: number;
 }
 
+export type TimePeriod = 'day' | '7days' | '14days' | '30days' | '90days' | 'all';
+
 export interface GlucoseAnalysis {
   readings: CsvRecord[];
   metrics: GlucoseMetrics;
   recentReadingsText: string;
   metricsText: string;
+  timePeriod?: TimePeriod;
+}
+
+export interface MultiPeriodGlucoseAnalysis {
+  day?: GlucoseAnalysis;
+  '7days'?: GlucoseAnalysis;
+  '14days'?: GlucoseAnalysis;
+  '30days'?: GlucoseAnalysis;
+  '90days'?: GlucoseAnalysis;
+  all?: GlucoseAnalysis;
 }

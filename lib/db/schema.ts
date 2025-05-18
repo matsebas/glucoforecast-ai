@@ -81,7 +81,7 @@ export const csvRecords = pgTable(
     userId: uuid("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
-    glucose: doublePrecision("glucose"),
+    glucose: doublePrecision("glucose").default(0).notNull(),
     timestamp: timestamp("timestamp", { withTimezone: true }).notNull(),
     recordType: varchar("record_type", { length: 2 }).notNull(),
     rapidInsulin: doublePrecision("rapid_insulin"),

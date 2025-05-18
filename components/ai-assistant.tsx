@@ -3,7 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { Bot, Send, User } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -36,6 +36,8 @@ export function AIAssistant() {
       },
     ],
   });
+
+  const MemoizedMarkdown = React.memo(ReactMarkdown);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +75,7 @@ export function AIAssistant() {
   const isProcessing = status === "submitted" || status === "streaming";
 
   return (
-    <Card className="w-full h-[calc(100vh-120px)] flex flex-col">
+    <Card className="w-1/2 h-[calc(100vh-120px)] flex flex-col">
       <CardHeader>
         <CardTitle>Asistente de Diabetes</CardTitle>
         <CardDescription>
@@ -95,7 +97,7 @@ export function AIAssistant() {
                 </Avatar>
               )}
               <div
-                className={`rounded-lg px-3 py-2 max-w-[80%] ${
+                className={`rounded-2xl px-3 py-2 max-w-[80%] text-sm ${
                   message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
                 }`}
               >
@@ -103,7 +105,35 @@ export function AIAssistant() {
                 {message.parts.map((part, i) => {
                   switch (part.type) {
                     case "text":
-                      return <ReactMarkdown key={i}>{part.text}</ReactMarkdown>;
+                      return (
+                        <MemoizedMarkdown
+                          key={`text-${i}`}
+                          components={{
+                            p: ({ children }) => <p className="mb-1.5 last:mb-0">{children}</p>,
+                            ul: ({ children }) => (
+                              <ul className="list-disc pl-4 mb-1.5">{children}</ul>
+                            ),
+                            ol: ({ children }) => (
+                              <ol className="list-decimal pl-4 mb-1.5">{children}</ol>
+                            ),
+                            a: ({ href, children }) => (
+                              <a
+                                href={href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary underline hover:text-primary/70 transition-colors"
+                              >
+                                {children}
+                              </a>
+                            ),
+                          }}
+                        >
+                          {message.parts
+                            .filter((part) => part.type === "text")
+                            .map((part) => part.text)
+                            .join(" ")}
+                        </MemoizedMarkdown>
+                      );
                     case "source":
                       return (
                         <span key={`source-${part.source.id}`}>

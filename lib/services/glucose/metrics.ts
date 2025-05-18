@@ -1,4 +1,4 @@
-import { CsvRecord, GlucoseMetrics } from "../../types";
+import { CsvRecord, GlucoseMetrics, TimePeriod } from "../../types";
 
 /**
  * Calcula el tiempo en rango (70-180 mg/dL), bajo rango (<70 mg/dL) y sobre rango (>180 mg/dL)
@@ -38,6 +38,9 @@ export function calculateVariability(readings: CsvRecord[]): number {
   if (readings.length <= 1) return 0;
 
   const avg = calculateAverageGlucose(readings);
+  // Prevenir división por cero si el promedio es 0
+  if (avg === 0) return 0;
+
   const squaredDiffs = readings.map((r) => Math.pow(r.glucose! - avg, 2));
   const variance = squaredDiffs.reduce((acc, val) => acc + val, 0) / readings.length;
   const stdDev = Math.sqrt(variance);
@@ -66,11 +69,35 @@ export function generateRecentReadingsText(readings: CsvRecord[]): string {
 /**
  * Genera un texto formateado con las métricas de glucosa
  */
-export function generateMetricsText(metrics: GlucoseMetrics): string {
+export function generateMetricsText(metrics: GlucoseMetrics, timePeriod?: TimePeriod): string {
   if (!metrics || metrics.timeInRange === 0) return "No hay métricas disponibles.";
 
+  let periodText = "";
+  if (timePeriod) {
+    switch (timePeriod) {
+      case 'day':
+        periodText = "del último día";
+        break;
+      case '7days':
+        periodText = "de los últimos 7 días";
+        break;
+      case '14days':
+        periodText = "de los últimos 14 días";
+        break;
+      case '30days':
+        periodText = "de los últimos 30 días";
+        break;
+      case '90days':
+        periodText = "de los últimos 90 días";
+        break;
+      case 'all':
+        periodText = "de todo el período";
+        break;
+    }
+  }
+
   return `
-    Métricas de glucosa:
+    Métricas de glucosa ${periodText}:
     - Tiempo en Rango (70-180 mg/dL): ${metrics.timeInRange}%
     - Tiempo Bajo Rango (<70 mg/dL): ${metrics.timeBelowRange}%
     - Tiempo Alto Rango (>180 mg/dL): ${metrics.timeAboveRange}%

@@ -1,6 +1,6 @@
 {
-  "id": "084581e3-1139-4f64-b842-95eedd59e8ec",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "c1a5e28e-b729-4e90-8b34-1edd32b9842d",
+  "prevId": "7981858a-3712-494c-bf70-828e2cc62208",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -97,8 +97,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.csv_readings": {
-      "name": "csv_readings",
+    "public.csv_records": {
+      "name": "csv_records",
       "schema": "",
       "columns": {
         "id": {
@@ -107,8 +107,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
+        "userId": {
+          "name": "userId",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -169,11 +169,11 @@
         }
       },
       "indexes": {
-        "csv_readings_timestamp_type_idx": {
-          "name": "csv_readings_timestamp_type_idx",
+        "csv_records_timestamp_type_idx": {
+          "name": "csv_records_timestamp_type_idx",
           "columns": [
             {
-              "expression": "user_id",
+              "expression": "userId",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -198,12 +198,12 @@
         }
       },
       "foreignKeys": {
-        "csv_readings_user_id_users_id_fk": {
-          "name": "csv_readings_user_id_users_id_fk",
-          "tableFrom": "csv_readings",
+        "csv_records_userId_users_id_fk": {
+          "name": "csv_records_userId_users_id_fk",
+          "tableFrom": "csv_records",
           "tableTo": "users",
           "columnsFrom": [
-            "user_id"
+            "userId"
           ],
           "columnsTo": [
             "id"
@@ -273,15 +273,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
+        "userId": {
+          "name": "userId",
           "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "filename": {
-          "name": "filename",
-          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -301,31 +295,31 @@
           "name": "mime_type",
           "type": "varchar(100)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "records_processed": {
           "name": "records_processed",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": 0
         },
         "uploaded_at": {
           "name": "uploaded_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "uploaded_files_user_id_users_id_fk": {
-          "name": "uploaded_files_user_id_users_id_fk",
+        "uploaded_files_userId_users_id_fk": {
+          "name": "uploaded_files_userId_users_id_fk",
           "tableFrom": "uploaded_files",
           "tableTo": "users",
           "columnsFrom": [
-            "user_id"
+            "userId"
           ],
           "columnsTo": [
             "id"

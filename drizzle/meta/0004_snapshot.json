@@ -1,6 +1,6 @@
 {
-  "id": "084581e3-1139-4f64-b842-95eedd59e8ec",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "83367ee8-e0aa-44fb-8fde-9db89e170eaa",
+  "prevId": "80bc04e9-d7da-41ea-bbaf-85702f595aae",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -107,8 +107,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
+        "userId": {
+          "name": "userId",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -173,7 +173,7 @@
           "name": "csv_readings_timestamp_type_idx",
           "columns": [
             {
-              "expression": "user_id",
+              "expression": "userId",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -198,12 +198,12 @@
         }
       },
       "foreignKeys": {
-        "csv_readings_user_id_users_id_fk": {
-          "name": "csv_readings_user_id_users_id_fk",
+        "csv_readings_userId_users_id_fk": {
+          "name": "csv_readings_userId_users_id_fk",
           "tableFrom": "csv_readings",
           "tableTo": "users",
           "columnsFrom": [
-            "user_id"
+            "userId"
           ],
           "columnsTo": [
             "id"
@@ -273,8 +273,8 @@
           "primaryKey": true,
           "notNull": true
         },
-        "user_id": {
-          "name": "user_id",
+        "userId": {
+          "name": "userId",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -301,31 +301,31 @@
           "name": "mime_type",
           "type": "varchar(100)",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "records_processed": {
           "name": "records_processed",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": 0
         },
         "uploaded_at": {
           "name": "uploaded_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "default": "now()"
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "uploaded_files_user_id_users_id_fk": {
-          "name": "uploaded_files_user_id_users_id_fk",
+        "uploaded_files_userId_users_id_fk": {
+          "name": "uploaded_files_userId_users_id_fk",
           "tableFrom": "uploaded_files",
           "tableTo": "users",
           "columnsFrom": [
-            "user_id"
+            "userId"
           ],
           "columnsTo": [
             "id"

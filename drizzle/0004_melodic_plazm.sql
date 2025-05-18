@@ -1,0 +1,1 @@
+ALTER TABLE "uploaded_files" ALTER COLUMN "records_processed" SET NOT NULL;

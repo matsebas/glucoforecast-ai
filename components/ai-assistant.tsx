@@ -45,6 +45,31 @@ export function AIAssistant() {
     }
   }, [messages]);
 
+  const handleCustomSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    // Obtener la hora local del cliente y su zona horaria en formato IANA
+    const clientNow = new Date();
+    const clientTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const clientLocalTimestamp = clientNow.toLocaleString("es-AR", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+      timeZoneName: "shortOffset",
+      timeZone: clientTimeZone,
+    });
+
+    handleSubmit(e, {
+      data: {
+        clientReportedDateTime: clientLocalTimestamp,
+        clientTimeZone: clientTimeZone,
+      },
+    });
+  };
+
   const isProcessing = status === "submitted" || status === "streaming";
 
   return (
@@ -134,7 +159,7 @@ export function AIAssistant() {
         </ScrollArea>
       </CardContent>
       <CardFooter className="border-t p-4">
-        <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
+        <form onSubmit={handleCustomSubmit} className="flex w-full items-center gap-2">
           <Input
             placeholder="Pregunta sobre tus tendencias de glucosa..."
             value={input}

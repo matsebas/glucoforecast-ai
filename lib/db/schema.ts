@@ -1,11 +1,13 @@
 import { AdapterAccountType } from "@auth/core/adapters";
 import {
+  doublePrecision,
   integer,
   pgTable,
   primaryKey,
   serial,
   text,
   timestamp,
+  uniqueIndex,
   uuid,
   varchar,
 } from "drizzle-orm/pg-core";
@@ -72,24 +74,42 @@ export const verificationToken = pgTable(
   ]
 );
 
-export const glucoseReadings = pgTable("glucose_readings", {
+export const csvRecords = pgTable(
+  "csv_records",
+  {
+    id: serial("id").primaryKey(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    glucose: doublePrecision("glucose"),
+    timestamp: timestamp("timestamp", { withTimezone: true }).notNull(),
+    recordType: varchar("record_type", { length: 2 }).notNull(),
+    rapidInsulin: doublePrecision("rapid_insulin"),
+    longInsulin: doublePrecision("long_insulin"),
+    carbs: doublePrecision("carbs"),
+    notes: text("notes"),
+    device: varchar("device", { length: 255 }),
+    serialNumber: varchar("serial_number", { length: 255 }),
+  },
+  (table) => {
+    return {
+      uniqTimestampType: uniqueIndex("csv_records_timestamp_type_idx").on(
+        table.userId,
+        table.timestamp,
+        table.recordType
+      ),
+    };
+  }
+);
+
+export const uploadedFiles = pgTable("uploaded_files", {
   id: serial("id").primaryKey(),
   userId: uuid("userId")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  value: integer("value").notNull(),
-  timestamp: timestamp("timestamp", { withTimezone: true }).defaultNow(),
-  trend: text("trend"),
-  notes: text("notes"),
+  originalFilename: text("original_filename").notNull(),
+  fileSize: integer("file_size").notNull(),
+  mimeType: varchar("mime_type", { length: 100 }).notNull(),
+  recordsProcessed: integer("records_processed").default(0).notNull(),
+  uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
-//
-// export const uploadedFiles = pgTable("uploaded_files", {
-//   id: serial("id").primaryKey(),
-//   userId: uuid("userId")
-//     .notNull()
-//     .references(() => users.id, { onDelete: "cascade" }),
-//   filename: text("filename").notNull(),
-//   fileUrl: text("file_url"),
-//   processed: boolean("processed").default(false),
-//   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow(),
-// });

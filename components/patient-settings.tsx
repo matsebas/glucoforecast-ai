@@ -113,83 +113,82 @@ export function PatientSettings() {
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)}>
         <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <div className="grid gap-2">
-              <Label htmlFor="isf">Factor de Sensibilidad a la Insulina (ISF)</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="isf"
-                  type="number"
-                  placeholder="100"
-                  {...register("isf", { valueAsNumber: true })}
-                  className="w-24"
-                  disabled={isLoading}
-                />
-                <span className="text-sm text-muted-foreground">mg/dL por unidad</span>
-              </div>
-              {errors.isf && <p className="text-sm text-destructive">{errors.isf.message}</p>}
-              <p className="text-xs text-muted-foreground">
-                Cuánto bajará su nivel de glucosa en sangre por cada unidad de insulina
-              </p>
+          <div className="grid gap-2">
+            <Label htmlFor="isf">Factor de Sensibilidad a la Insulina (ISF)</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="isf"
+                type="number"
+                placeholder="100"
+                {...register("isf", { valueAsNumber: true })}
+                className="w-24"
+                disabled={isLoading}
+              />
+              <span className="text-sm text-muted-foreground">mg/dL por unidad</span>
             </div>
-
-            <Separator />
-
-            <div className="grid gap-2">
-              <Label htmlFor="icr">Relación Insulina-Carbohidratos (ICR)</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="icr"
-                  type="number"
-                  placeholder="10"
-                  {...register("icr", { valueAsNumber: true })}
-                  className="w-24"
-                  disabled={isLoading}
-                />
-                <span className="text-sm text-muted-foreground">g/unidad</span>
-              </div>
-              {errors.icr && <p className="text-sm text-destructive">{errors.icr.message}</p>}
-              <p className="text-xs text-muted-foreground">
-                Cuántos gramos de carbohidratos cubre 1 unidad de insulina
-              </p>
-            </div>
-
-            <Separator />
-
-            <div className="grid gap-2">
-              <Label htmlFor="target-range">Rango Objetivo de Glucosa</Label>
-              <div className="flex items-center gap-2">
-                <Input
-                  id="target-low"
-                  type="number"
-                  placeholder="70"
-                  {...register("targetLow", { valueAsNumber: true })}
-                  className="w-24"
-                  disabled={isLoading}
-                />
-                <span className="text-sm text-muted-foreground">-</span>
-                <Input
-                  id="target-high"
-                  type="number"
-                  placeholder="180"
-                  {...register("targetHigh", { valueAsNumber: true })}
-                  className="w-24"
-                  disabled={isLoading}
-                />
-                <span className="text-sm text-muted-foreground">mg/dL</span>
-              </div>
-              {(errors.targetLow || errors.targetHigh) && (
-                <p className="text-sm text-destructive">
-                  {errors.targetLow?.message || errors.targetHigh?.message}
-                </p>
-              )}
-              <p className="text-xs text-muted-foreground">
-                El intervalo deseado para sus niveles de glucosa en sangre
-              </p>
-            </div>
+            {errors.isf && <p className="text-sm text-destructive">{errors.isf.message}</p>}
+            <p className="text-xs text-muted-foreground">
+              Cuánto bajará su nivel de glucosa en sangre por cada unidad de insulina
+            </p>
           </div>
+
+          <Separator />
+
+          <div className="grid gap-2">
+            <Label htmlFor="icr">Relación Insulina-Carbohidratos (ICR)</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="icr"
+                type="number"
+                placeholder="10"
+                {...register("icr", { valueAsNumber: true })}
+                className="w-24"
+                disabled={isLoading}
+              />
+              <span className="text-sm text-muted-foreground">g/unidad</span>
+            </div>
+            {errors.icr && <p className="text-sm text-destructive">{errors.icr.message}</p>}
+            <p className="text-xs text-muted-foreground">
+              Cuántos gramos de carbohidratos cubre 1 unidad de insulina
+            </p>
+          </div>
+
+          <Separator />
+
+          <div className="grid gap-2">
+            <Label htmlFor="target-range">Rango Objetivo de Glucosa</Label>
+            <div className="flex items-center gap-2">
+              <Input
+                id="target-low"
+                type="number"
+                placeholder="70"
+                {...register("targetLow", { valueAsNumber: true })}
+                className="w-24"
+                disabled={isLoading}
+              />
+              <span className="text-sm text-muted-foreground">-</span>
+              <Input
+                id="target-high"
+                type="number"
+                placeholder="180"
+                {...register("targetHigh", { valueAsNumber: true })}
+                className="w-24"
+                disabled={isLoading}
+              />
+              <span className="text-sm text-muted-foreground">mg/dL</span>
+            </div>
+            {(errors.targetLow || errors.targetHigh) && (
+              <p className="text-sm text-destructive">
+                {errors.targetLow?.message || errors.targetHigh?.message}
+              </p>
+            )}
+            <p className="text-xs text-muted-foreground">
+              El intervalo deseado para sus niveles de glucosa en sangre
+            </p>
+          </div>
+          <Separator />
         </CardContent>
-        <CardFooter>
+        <CardFooter className="pt-6">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Cargando..." : "Guardar parámetros"}
           </Button>

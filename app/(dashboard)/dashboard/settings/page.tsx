@@ -1,7 +1,5 @@
 "use client";
 
-import { useTheme } from "next-themes";
-
 import { LibreViewSync } from "@/components/libreview-sync";
 import { PatientSettings } from "@/components/patient-settings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,8 +7,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type React from "react";
 
 export default function SettingsPage() {
-  const { theme, setTheme } = useTheme();
-
   return (
     <div className="space-y-6">
       <div>

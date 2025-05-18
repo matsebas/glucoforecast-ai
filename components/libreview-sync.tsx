@@ -23,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
 
 interface LibreViewSyncFormValues {
   email: string;
@@ -137,8 +138,9 @@ export function LibreViewSync() {
               en nuestros servidores.
             </p>
           </div>
+          <Separator />
         </CardContent>
-        <CardFooter>
+        <CardFooter className="pt-6">
           <Button type="submit" disabled={isLoading}>
             {isLoading ? "Sincronizando..." : "Sincronizar datos"}
           </Button>

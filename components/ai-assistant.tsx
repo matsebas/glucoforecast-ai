@@ -1,13 +1,12 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { Bot, Send, User } from "lucide-react";
+import { ArrowUp } from "lucide-react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -24,7 +23,7 @@ export function AIAssistant() {
         parts: [
           {
             type: "text",
-            text: "Hola, soy tu asistente de GlucoForecast AI. Puedo ayudarte a entender tus tendencias de glucosa y responder preguntas sobre tu diabetes. ¿En qué puedo ayudarte hoy?",
+            text: "¿Cómo puedo ayudarte hoy?",
           },
         ],
         content: "",
@@ -35,11 +34,11 @@ export function AIAssistant() {
   const { name } = session!.user!;
   const MemoizedMarkdown = React.memo(ReactMarkdown);
 
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollAreaRef.current) {
-      scrollAreaRef.current.scrollTop = scrollAreaRef.current.scrollHeight;
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
@@ -73,28 +72,22 @@ export function AIAssistant() {
   return (
     <Card className="max-w-2xl h-[calc(100vh-120px)] flex flex-col">
       <CardHeader>
-        <CardTitle>Buenas tardes, {name}</CardTitle>
+        <CardTitle>Hola, {name}.</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 overflow-hidden p-0">
-        <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
+        <ScrollArea className="h-full p-4">
           {messages.map((message) => (
             <div
               key={message.id}
               className={`flex items-start gap-3 mb-4 ${message.role === "user" ? "justify-end" : "justify-start"}`}
             >
-              {message.role === "assistant" && (
-                <Avatar className="size-8">
-                  <AvatarFallback className="bg-primary text-primary-foreground">
-                    <Bot size={16} />
-                  </AvatarFallback>
-                </Avatar>
-              )}
               <div
-                className={`rounded-2xl px-3 py-2 max-w-[80%] text-sm ${
-                  message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
+                className={`rounded-t-4xl rounded-bl-4xl rounded-br-md  px-3 py-2 max-w-full font-light leading-7 list-outside ${
+                  message.role === "user"
+                    ? "bg-foreground/10 text-foreground/90 border"
+                    : "bg-transparent text-foreground/75"
                 }`}
               >
-                {/*{message.content}*/}
                 {message.parts.map((part, i) => {
                   switch (part.type) {
                     case "text":
@@ -152,13 +145,6 @@ export function AIAssistant() {
                   }
                 })}
               </div>
-              {message.role === "user" && (
-                <Avatar className="size-8">
-                  <AvatarFallback className="bg-muted">
-                    <User size={16} />
-                  </AvatarFallback>
-                </Avatar>
-              )}
             </div>
           ))}
           {(status === "submitted" || status === "streaming") && (
@@ -179,19 +165,20 @@ export function AIAssistant() {
               Ocurrió un error al procesar tu solicitud. Por favor, intenta nuevamente.
             </div>
           )}
+          <div ref={messagesEndRef} />
         </ScrollArea>
       </CardContent>
-      <CardFooter className="border-t p-4">
+      <CardFooter className="border-t p-4 pb-0">
         <form onSubmit={handleCustomSubmit} className="flex w-full items-center gap-2">
           <Input
-            placeholder="Pregunta sobre tus tendencias de glucosa..."
+            placeholder="¿Cómo puedo ayudarte?"
             value={input}
             onChange={handleInputChange}
             disabled={isProcessing}
-            className="flex-1"
+            className="flex-1 h-14 font-light"
           />
           <Button type="submit" size="icon" disabled={isProcessing || !input.trim()}>
-            <Send className="size-4" />
+            <ArrowUp className="size-6" />
           </Button>
         </form>
       </CardFooter>

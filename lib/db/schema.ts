@@ -113,3 +113,15 @@ export const uploadedFiles = pgTable("uploaded_files", {
   recordsProcessed: integer("records_processed").default(0).notNull(),
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+export const patientSettings = pgTable("patient_settings", {
+  id: serial("id").primaryKey(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  isf: integer("isf").notNull().default(100),
+  icr: integer("icr").notNull().default(10),
+  targetLow: integer("target_low").notNull().default(70),
+  targetHigh: integer("target_high").notNull().default(180),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+});

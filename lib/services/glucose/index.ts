@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, gt, gte, lte, or } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { csvRecords } from "@/lib/db/schema";
@@ -12,68 +12,43 @@ import {
   generateRecentReadingsText,
 } from "./metrics";
 
-/**
- * Filtra las lecturas por período de tiempo
- */
-function filterReadingsByTimePeriod(readings: CsvRecord[], timePeriod: TimePeriod): CsvRecord[] {
-  if (timePeriod === 'all') {
-    return readings;
-  }
-
+function getTimestampFilterByTimePeriod(timePeriod: TimePeriod) {
   const now = new Date();
-  let startDate: Date;
+  let fromDate: Date | undefined = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  let toDate: Date | undefined = now;
 
   switch (timePeriod) {
-    case 'day':
-      startDate = new Date(now);
-      startDate.setDate(now.getDate() - 1);
+    case "day":
+      fromDate.setDate(now.getDate() - 1);
       break;
-    case '7days':
-      startDate = new Date(now);
-      startDate.setDate(now.getDate() - 7);
+    case "7days":
+      fromDate.setDate(now.getDate() - 7);
       break;
-    case '14days':
-      startDate = new Date(now);
-      startDate.setDate(now.getDate() - 14);
+    case "14days":
+      fromDate.setDate(now.getDate() - 14);
       break;
-    case '30days':
-      startDate = new Date(now);
-      startDate.setDate(now.getDate() - 30);
+    case "30days":
+      fromDate.setDate(now.getDate() - 30);
       break;
-    case '90days':
-      startDate = new Date(now);
-      startDate.setDate(now.getDate() - 90);
+    case "90days":
+      fromDate.setDate(now.getDate() - 90);
       break;
     default:
-      return readings;
+      fromDate = undefined;
+      toDate = undefined;
+      break;
   }
 
-  return readings.filter(reading => {
-    const readingDate = new Date(reading.timestamp);
-    return readingDate >= startDate && readingDate <= now;
-  });
+  return {
+    fromDate,
+    toDate,
+  };
 }
 
 /**
  * Genera un análisis de glucosa para un período de tiempo específico
  */
 function generateGlucoseAnalysis(readings: CsvRecord[], timePeriod: TimePeriod): GlucoseAnalysis {
-  // Si no hay lecturas, devolver valores por defecto
-  if (readings.length === 0) {
-    return {
-      readings: [],
-      metrics: {
-        timeInRange: 0,
-        timeBelowRange: 0,
-        timeAboveRange: 0,
-        averageGlucose: 0,
-      },
-      recentReadingsText: "No hay lecturas de glucosa válidas disponibles.",
-      metricsText: "No hay métricas disponibles.",
-      timePeriod,
-    };
-  }
-
   // Calcular métricas
   const timeInRangeData = calculateTimeInRange(readings);
   const metrics = {
@@ -102,7 +77,7 @@ function generateGlucoseAnalysis(readings: CsvRecord[], timePeriod: TimePeriod):
  */
 export async function getUserMultiPeriodGlucoseAnalysis(
   userId: string,
-  periods: TimePeriod[] = ['all']
+  periods: TimePeriod[] = ["all"]
 ): Promise<MultiPeriodGlucoseAnalysis> {
   try {
     const result: MultiPeriodGlucoseAnalysis = {};
@@ -123,15 +98,38 @@ export async function getUserMultiPeriodGlucoseAnalysis(
  * para un período de tiempo específico
  */
 export async function getUserGlucoseAnalysis(
-  userId: string, 
-  timePeriod: TimePeriod = 'all'
+  userId: string,
+  timePeriod: TimePeriod = "all"
 ): Promise<GlucoseAnalysis> {
   try {
+    const { fromDate, toDate } = getTimestampFilterByTimePeriod(timePeriod);
+
+    console.debug(
+      ">> getUserGlucoseAnalysis: Obteniendo análisis de glucosa para el usuario:",
+      userId
+    );
+    console.debug(
+      ">> getUserGlucoseAnalysis: Período de tiempo:",
+      timePeriod,
+      "desde:",
+      fromDate,
+      "hasta:",
+      toDate
+    );
+
     // Obtener lecturas de la tabla de CSV
     const csvReadings = await db
       .select()
       .from(csvRecords)
-      .where(eq(csvRecords.userId, userId))
+      .where(
+        and(
+          eq(csvRecords.userId, userId),
+          or(eq(csvRecords.recordType, "0"), eq(csvRecords.recordType, "1")),
+          gt(csvRecords.glucose, 0),
+          fromDate ? gte(csvRecords.timestamp, fromDate) : undefined,
+          toDate ? lte(csvRecords.timestamp, toDate) : undefined
+        )
+      )
       .orderBy(csvRecords.timestamp);
 
     // Si no hay lecturas, devolver valores por defecto
@@ -149,32 +147,7 @@ export async function getUserGlucoseAnalysis(
         timePeriod,
       };
     }
-
-    // Procesar lecturas para convertirlas al formato esperado
-    const allReadings: CsvRecord[] = csvReadings
-      // Filtramos solo registros de tipo 0 (historial) y 1 (escaneo) que tienen valores de glucosa válidos (mayores que 0)
-      .filter((r) => (r.recordType === "0" || r.recordType === "1") && r.glucose !== null && r.glucose !== undefined && r.glucose > 0);
-
-    // Si no hay lecturas de glucosa válidas después de filtrar
-    if (allReadings.length === 0) {
-      return {
-        readings: [],
-        metrics: {
-          timeInRange: 0,
-          timeBelowRange: 0,
-          timeAboveRange: 0,
-          averageGlucose: 0,
-        },
-        recentReadingsText: "No hay lecturas de glucosa válidas disponibles.",
-        metricsText: "No hay métricas disponibles.",
-        timePeriod,
-      };
-    }
-
-    // Filtrar lecturas por período de tiempo
-    const filteredReadings = filterReadingsByTimePeriod(allReadings, timePeriod);
-
-    return generateGlucoseAnalysis(filteredReadings, timePeriod);
+    return generateGlucoseAnalysis(csvReadings, timePeriod);
   } catch (error) {
     console.error("Error al obtener análisis de glucosa:", error);
     throw new Error("Error al obtener datos de glucosa");

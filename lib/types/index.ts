@@ -1,3 +1,5 @@
+import { LibreConnection, LibreResponse } from "libre-link-unofficial-api/dist/types";
+
 import { csvRecords } from "@/lib/db/schema";
 
 export type CsvRecord = typeof csvRecords.$inferSelect;
@@ -50,7 +52,7 @@ export interface GlucoseMetrics {
   variability?: number;
 }
 
-export type TimePeriod = 'day' | '7days' | '14days' | '30days' | '90days' | 'all';
+export type TimePeriod = "day" | "7days" | "14days" | "30days" | "90days" | "all";
 
 export interface GlucoseAnalysis {
   readings: CsvRecord[];
@@ -62,9 +64,21 @@ export interface GlucoseAnalysis {
 
 export interface MultiPeriodGlucoseAnalysis {
   day?: GlucoseAnalysis;
-  '7days'?: GlucoseAnalysis;
-  '14days'?: GlucoseAnalysis;
-  '30days'?: GlucoseAnalysis;
-  '90days'?: GlucoseAnalysis;
+  "7days"?: GlucoseAnalysis;
+  "14days"?: GlucoseAnalysis;
+  "30days"?: GlucoseAnalysis;
+  "90days"?: GlucoseAnalysis;
   all?: GlucoseAnalysis;
+}
+
+interface Ticket {
+  token: string;
+  expires: number;
+  duration: number;
+}
+
+export interface LibreConnectionsResponse extends LibreResponse {
+  status: number;
+  data: LibreConnection[];
+  ticket: Ticket;
 }

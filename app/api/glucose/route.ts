@@ -18,13 +18,19 @@ export async function GET(request: Request) {
 
     // Obtener parámetros de la URL
     const { searchParams } = new URL(request.url);
-    const period = searchParams.get('period') as TimePeriod | null;
-    const multiPeriod = searchParams.get('multiPeriod');
+    const period = searchParams.get("period") as TimePeriod | null;
+    const multiPeriod = searchParams.get("multiPeriod");
 
     // Si se solicitan múltiples períodos
-    if (multiPeriod === 'true') {
+    if (multiPeriod === "true") {
       // Obtener los períodos solicitados o usar los predeterminados
-      const periods = searchParams.get('periods')?.split(',') as TimePeriod[] || ['day', '7days', '14days', '30days', '90days'];
+      const periods = (searchParams.get("periods")?.split(",") as TimePeriod[]) || [
+        "day",
+        "7days",
+        "14days",
+        "30days",
+        "90days",
+      ];
 
       // Usar el servicio para obtener análisis de glucosa para múltiples períodos
       const multiPeriodAnalysis = await getUserMultiPeriodGlucoseAnalysis(userId, periods);
@@ -33,7 +39,9 @@ export async function GET(request: Request) {
       return NextResponse.json(multiPeriodAnalysis);
     } else {
       // Usar el servicio centralizado para obtener análisis de glucosa para un período específico
-      const glucoseAnalysis = await getUserGlucoseAnalysis(userId, period || 'all');
+      const glucoseAnalysis = await getUserGlucoseAnalysis(userId, period || "all");
+
+      console.debug(">> GET: Análisis de glucosa obtenido:", glucoseAnalysis);
 
       // Devolver la respuesta estructurada
       return NextResponse.json({

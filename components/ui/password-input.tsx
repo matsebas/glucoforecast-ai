@@ -4,10 +4,10 @@ import { Eye, EyeOff } from "lucide-react";
 import * as React from "react";
 
 import { Button } from "@/components/ui/button";
-import { Input, InputProps } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
-export interface PasswordInputProps extends Omit<InputProps, "type"> {
+export interface PasswordInputProps extends Omit<React.ComponentProps<"input">, "type"> {
   showPasswordLabel?: string;
   hidePasswordLabel?: string;
 }
@@ -41,9 +41,9 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
           aria-label={showPassword ? hidePasswordLabel : showPasswordLabel}
         >
           {showPassword ? (
-            <EyeOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-          ) : (
             <Eye className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+          ) : (
+            <EyeOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           )}
         </Button>
       </div>

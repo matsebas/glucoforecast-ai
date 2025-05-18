@@ -14,7 +14,10 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarSeparator,
 } from "@/components/ui/sidebar";
+
+import { UserProfile } from "./user-profile";
 
 export function AppSidebar() {
   const pathname = usePathname();
@@ -30,8 +33,10 @@ export function AppSidebar() {
           <DropletIcon className="h-6 w-6 text-primary" />
           <span className="text-xl font-bold">GlucoForecast AI</span>
         </Link>
+        <UserProfile />
       </SidebarHeader>
       <SidebarContent>
+        <SidebarSeparator />
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={isActive("/dashboard")}>

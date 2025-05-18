@@ -92,11 +92,11 @@ export default function DashboardPage() {
   const getTrendIcon = () => {
     switch (data.trend) {
       case "rising":
-        return <TrendingUp className="h-5 w-5 text-red-500" />;
+        return <TrendingUp className="size-5 text-red-500" />;
       case "falling":
-        return <TrendingDown className="h-5 w-5 text-blue-500" />;
+        return <TrendingDown className="size-5 text-blue-500" />;
       default:
-        return <Activity className="h-5 w-5 text-green-500" />;
+        return <Activity className="size-5 text-green-500" />;
     }
   };
 
@@ -110,33 +110,11 @@ export default function DashboardPage() {
         <div className="flex items-center gap-2">
           <StatusIndicator isConnected={data.isConnected} hasData={data.hasData} />
           <Button variant="outline" size="sm" onClick={fetchGlucoseData} disabled={isLoading}>
-            <RefreshCw className={`mr-2 h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+            <RefreshCw className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`} />
             Actualizar
           </Button>
         </div>
       </div>
-
-      {/*{!data.hasData && data.isConnected ? (*/}
-      {/*  <Card>*/}
-      {/*    <CardContent className="py-6">*/}
-      {/*      <div className="text-center">*/}
-      {/*        <h3 className="text-lg font-medium">No hay datos de glucosa disponibles</h3>*/}
-      {/*        <p className="text-muted-foreground mt-2">*/}
-      {/*          Sube un archivo CSV con tus datos o configura la conexión con FreeStyle Libre para*/}
-      {/*          comenzar.*/}
-      {/*        </p>*/}
-      {/*        <div className="flex justify-center gap-4 mt-4">*/}
-      {/*          <Button asChild>*/}
-      {/*            <Link href="/dashboard/upload">Subir CSV</Link>*/}
-      {/*          </Button>*/}
-      {/*          <Button variant="outline" asChild>*/}
-      {/*            <Link href="/dashboard/settings">Configurar API</Link>*/}
-      {/*          </Button>*/}
-      {/*        </div>*/}
-      {/*      </div>*/}
-      {/*    </CardContent>*/}
-      {/*  </Card>*/}
-      {/*) : (*/}
       <>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card>
@@ -154,7 +132,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Tiempo en Rango</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+              <Clock className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{data.timeInRange}%</div>
@@ -164,7 +142,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Glucosa Promedio</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
+              <Activity className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{data.averageGlucose} mg/dL</div>
@@ -176,7 +154,7 @@ export default function DashboardPage() {
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Tiempo Fuera de Rango</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+              <AlertTriangle className="size-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
               <div className="flex justify-between">
@@ -264,7 +242,7 @@ export default function DashboardPage() {
               </div>
               <Button asChild className="w-full">
                 <Link href="/dashboard/ai">
-                  <Bot className="mr-2 h-4 w-4" />
+                  <Bot className="mr-2 size-4" />
                   Abrir Asistente IA
                 </Link>
               </Button>

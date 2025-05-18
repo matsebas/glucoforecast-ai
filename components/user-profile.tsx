@@ -12,7 +12,7 @@ export function UserProfile() {
   if (status === "loading") {
     return (
       <div className="flex items-center gap-2 p-2">
-        <Skeleton className="h-10 w-10 rounded-full" />
+        <Skeleton className="size-10 rounded-full" />
         <div className="space-y-1">
           <Skeleton className="h-4 w-24" />
           <Skeleton className="h-3 w-32" />
@@ -38,7 +38,7 @@ export function UserProfile() {
     <div className="flex items-center gap-3 p-2 rounded-md bg-sidebar-accent">
       <Avatar>
         <AvatarFallback className="bg-sidebar">
-          {initials ? initials : <User className="h-4 w-4" />}
+          {initials ? initials : <User className="size-4" />}
         </AvatarFallback>
       </Avatar>
       <div className="flex flex-col overflow-hidden">

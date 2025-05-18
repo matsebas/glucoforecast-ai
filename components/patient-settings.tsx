@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { toast } from "@/hooks/use-toast";
 import { patientSettingsSchema } from "@/lib/validations/patient-settings";
 
 // Tipo derivado del esquema Zod
@@ -55,9 +55,8 @@ export function PatientSettings() {
         reset(data); // Actualizar el formulario con los datos obtenidos
       } catch (error) {
         console.error("Error al cargar la configuración:", error);
-        toast({
-          title: "No se pudo cargar la configuración existente",
-          variant: "destructive",
+        toast.error("Preferencias personales", {
+          description: "Error al intentar cargar la configuración",
         });
       } finally {
         setIsLoading(false);
@@ -91,16 +90,13 @@ export function PatientSettings() {
         throw new Error(result.message || result.error || "Error al guardar la configuración");
       }
 
-      toast({
-        title: "Preferencias personales",
+      toast.success("Preferencias personales", {
         description: "La configuración se ha guardado correctamente.",
       });
     } catch (error) {
       console.error("Error al guardar la configuración:", error);
-      toast({
-        title: "Preferencias personales",
+      toast.error("Preferencias personales", {
         description: "Error al guardar la configuración",
-        variant: "destructive",
       });
     } finally {
       setIsLoading(false);

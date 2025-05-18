@@ -6,7 +6,7 @@ export default function AIPage() {
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Asistente de IA</h1>
         <p className="text-muted-foreground">
-          Consulta con nuestro asistente de IA sobre tus tendencias de glucosa y patrones
+          Asistente de IA para ayudarte a entender tus tendencias de glucosa
         </p>
       </div>
       <AIAssistant />

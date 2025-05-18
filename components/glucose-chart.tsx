@@ -1,15 +1,13 @@
 "use client";
 
+import { CartesianGrid, Line, LineChart, ReferenceLine, XAxis, YAxis } from "recharts";
+
 import {
-  CartesianGrid,
-  Line,
-  LineChart,
-  ReferenceLine,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 interface GlucoseReading {
   id: number;
@@ -24,6 +22,8 @@ interface GlucoseChartProps {
   data: GlucoseReading[];
 }
 
+const chartConfig = {} satisfies ChartConfig;
+
 export function GlucoseChart({ data = [] }: GlucoseChartProps) {
   // Formatear los datos para el gráfico
   const chartData = data.map((reading) => ({
@@ -36,7 +36,7 @@ export function GlucoseChart({ data = [] }: GlucoseChartProps) {
   }));
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ChartContainer config={chartConfig} className="w-full h-full">
       <LineChart
         data={chartData}
         margin={{
@@ -49,23 +49,18 @@ export function GlucoseChart({ data = [] }: GlucoseChartProps) {
         <CartesianGrid strokeDasharray="1 1" stroke="#e0dfdf" />
         <XAxis dataKey="time" fontSize={12} />
         <YAxis domain={[40, 250]} fontSize={12} />
-        <Tooltip
-          labelFormatter={(value) => `Hora: ${value}`}
-          formatter={(value) => [`${value} mg/dL`, "Glucosa"]}
-          contentStyle={{ fontSize: 12 }}
-        />
+        <ChartTooltip content={<ChartTooltipContent />} />
         <ReferenceLine y={180} stroke="green" strokeDasharray="5 3" />
         <ReferenceLine y={70} stroke="green" strokeDasharray="5 3" />
         <Line
           type="monotone"
           dataKey="value"
-          stroke="#8884d8"
           activeDot={{ r: 8 }}
           dot={false}
           strokeWidth={2}
           connectNulls
         />
       </LineChart>
-    </ResponsiveContainer>
+    </ChartContainer>
   );
 }

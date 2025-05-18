@@ -104,19 +104,6 @@ export async function getUserGlucoseAnalysis(
   try {
     const { fromDate, toDate } = getTimestampFilterByTimePeriod(timePeriod);
 
-    console.debug(
-      ">> getUserGlucoseAnalysis: Obteniendo análisis de glucosa para el usuario:",
-      userId
-    );
-    console.debug(
-      ">> getUserGlucoseAnalysis: Período de tiempo:",
-      timePeriod,
-      "desde:",
-      fromDate,
-      "hasta:",
-      toDate
-    );
-
     // Obtener lecturas de la tabla de CSV
     const csvReadings = await db
       .select()

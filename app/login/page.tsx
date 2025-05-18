@@ -131,7 +131,7 @@ export default function LoginPage() {
   if (status === "loading") {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-50">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+        <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
       </div>
     );
   }
@@ -147,14 +147,14 @@ export default function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             {errors.general && (
               <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
+                <AlertCircle className="size-4" />
                 <AlertDescription>{errors.general}</AlertDescription>
               </Alert>
             )}
 
             {success && (
               <Alert variant="default" className="bg-green-50 text-green-800 border-green-200">
-                <CheckCircle2 className="h-4 w-4 text-green-600" />
+                <CheckCircle2 className="size-4 text-green-600" />
                 <AlertDescription>{success}</AlertDescription>
               </Alert>
             )}

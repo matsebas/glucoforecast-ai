@@ -5,7 +5,7 @@ import { useSession } from "next-auth/react";
 import { useEffect } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import type React from "react";
 
@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (status === "loading") {
     return (
       <div className="flex h-screen w-full items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+        <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
       </div>
     );
   }
@@ -33,9 +33,11 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen">
+      <div className="flex min-h-screen w-screen">
         <AppSidebar />
-        <main className="flex-1 overflow-x-hidden bg-muted/40 p-4 md:p-6">{children}</main>
+        <SidebarInset>
+          <main className="flex flex-1 flex-col gap-4 p-4 pt-2 ">{children}</main>
+        </SidebarInset>
       </div>
     </SidebarProvider>
   );

@@ -1,15 +1,13 @@
 "use client";
 
+import { Area, AreaChart, CartesianGrid, ReferenceLine, XAxis, YAxis } from "recharts";
+
 import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ReferenceLine,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
 
 interface GlucoseReading {
   id: number;
@@ -23,6 +21,8 @@ interface GlucoseReading {
 interface DailyPatternChartProps {
   data: GlucoseReading[];
 }
+
+const chartConfig = {} satisfies ChartConfig;
 
 export function DailyPatternChart({ data = [] }: DailyPatternChartProps) {
   // Agrupar lecturas por hora del día
@@ -60,7 +60,7 @@ export function DailyPatternChart({ data = [] }: DailyPatternChartProps) {
   });
 
   return (
-    <ResponsiveContainer width="100%" height="100%">
+    <ChartContainer config={chartConfig} className="h-full w-full">
       <AreaChart
         data={hourlyData}
         margin={{
@@ -70,43 +70,16 @@ export function DailyPatternChart({ data = [] }: DailyPatternChartProps) {
           bottom: 0,
         }}
       >
-        <CartesianGrid strokeDasharray="1 1" stroke="#e0dfdf" />
+        <CartesianGrid strokeDasharray="1 1" />
         <XAxis dataKey="hour" fontSize={12} />
         <YAxis domain={[40, 250]} fontSize={12} />
-        <Tooltip
-          formatter={(value) => [`${value} mg/dL`, ""]}
-          labelFormatter={(value) => `Hora: ${value}:00`}
-          contentStyle={{ fontSize: 12 }}
-        />
-        <ReferenceLine y={180} stroke="green" strokeDasharray="5 5" />
-        <ReferenceLine y={70} stroke="green" strokeDasharray="5 5" />
-        <Area
-          type="monotone"
-          dataKey="min"
-          stackId="1"
-          stroke="#8884d8"
-          fill="#8884d8"
-          fillOpacity={0.1}
-          name="Mínimo"
-        />
-        <Area
-          type="monotone"
-          dataKey="max"
-          stackId="1"
-          stroke="#8884d8"
-          fill="#8884d8"
-          fillOpacity={0.3}
-          name="Máximo"
-        />
-        <Area
-          type="monotone"
-          dataKey="avg"
-          stroke="#8884d8"
-          fill="#8884d8"
-          fillOpacity={0.5}
-          name="Promedio"
-        />
+        <ChartTooltip content={<ChartTooltipContent />} />
+        <ReferenceLine y={180} stroke="green" strokeDasharray="5 5" strokeWidth={1.5} />
+        <ReferenceLine y={70} stroke="green" strokeDasharray="5 5" strokeWidth={1.5} />
+        <Area type="monotone" dataKey="min" stackId="1" fillOpacity={0.1} name="Mínimo" />
+        <Area type="monotone" dataKey="max" stackId="1" fillOpacity={0.3} name="Máximo" />
+        <Area type="monotone" dataKey="avg" fillOpacity={0.5} name="Promedio" />
       </AreaChart>
-    </ResponsiveContainer>
+    </ChartContainer>
   );
 }

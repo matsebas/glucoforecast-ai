@@ -12,10 +12,14 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold tracking-tight mb-6">Configuración</h1>
-
-      <Tabs defaultValue="preferences" className="space-y-4">
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Configuración</h1>
+        <p className="text-muted-foreground">
+          Configura tus preferencias y sincroniza tus datos con LibreView
+        </p>
+      </div>
+      <Tabs defaultValue="preferences" className="space-y-4 max-w-2xl">
         <TabsList>
           <TabsTrigger value="preferences">Preferencias</TabsTrigger>
           <TabsTrigger value="api">LibreLink API</TabsTrigger>

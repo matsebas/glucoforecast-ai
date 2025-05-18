@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +23,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { toast } from "@/hooks/use-toast";
 
 interface LibreViewSyncFormValues {
   email: string;
@@ -34,7 +34,6 @@ export function LibreViewSync() {
   const [isLoading, setIsLoading] = useState(false);
 
   const {
-    getValues,
     register,
     handleSubmit,
     formState: { errors },
@@ -69,23 +68,18 @@ export function LibreViewSync() {
       }
 
       if (result.success) {
-        toast({
-          title: "Sincronización exitosa",
+        toast.success("Sincronización exitosa", {
           description: result.message,
         });
       } else {
-        toast({
-          title: "Error al sincronizar con LibreView",
+        toast.error("Error al sincronizar con LibreView", {
           description: result.message,
-          variant: "destructive",
         });
       }
     } catch (error) {
       console.error("Error al sincronizar con LibreView:", error);
-      toast({
-        title: "Error al sincronizar con LibreView",
+      toast.error("Error al sincronizar con LibreView", {
         description: error instanceof Error ? error.message : "Error al sincronizar con LibreView",
-        variant: "destructive",
       });
     } finally {
       setIsLoading(false);

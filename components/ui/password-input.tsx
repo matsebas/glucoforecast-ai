@@ -12,44 +12,38 @@ export interface PasswordInputProps extends Omit<React.ComponentProps<"input">, 
   hidePasswordLabel?: string;
 }
 
-const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
-  (
-    {
-      className,
-      showPasswordLabel = "Mostrar contraseña",
-      hidePasswordLabel = "Ocultar contraseña",
-      ...props
-    },
-    ref
-  ) => {
-    const [showPassword, setShowPassword] = React.useState(false);
+const PasswordInput = ({
+  className,
+  showPasswordLabel = "Mostrar contraseña",
+  hidePasswordLabel = "Ocultar contraseña",
+  ...props
+}: PasswordInputProps) => {
+  const [showPassword, setShowPassword] = React.useState(false);
 
-    return (
-      <div className="relative">
-        <Input
-          type={showPassword ? "text" : "password"}
-          className={cn("pr-10", className)}
-          ref={ref}
-          {...props}
-        />
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-          onClick={() => setShowPassword(!showPassword)}
-          aria-label={showPassword ? hidePasswordLabel : showPasswordLabel}
-        >
-          {showPassword ? (
-            <Eye className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-          ) : (
-            <EyeOff className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
-          )}
-        </Button>
-      </div>
-    );
-  }
-);
+  return (
+    <div className="relative">
+      <Input
+        type={showPassword ? "text" : "password"}
+        className={cn("pr-10", className)}
+        {...props}
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+        onClick={() => setShowPassword(!showPassword)}
+        aria-label={showPassword ? hidePasswordLabel : showPasswordLabel}
+      >
+        {showPassword ? (
+          <Eye className="size-4 text-muted-foreground" aria-hidden="true" />
+        ) : (
+          <EyeOff className="size-4 text-muted-foreground" aria-hidden="true" />
+        )}
+      </Button>
+    </div>
+  );
+};
 PasswordInput.displayName = "PasswordInput";
 
 export { PasswordInput };

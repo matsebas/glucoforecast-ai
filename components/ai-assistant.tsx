@@ -3,23 +3,18 @@
 import { useChat } from "@ai-sdk/react";
 import { Bot, Send, User } from "lucide-react";
 import Image from "next/image";
+import { useSession } from "next-auth/react";
 import React, { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function AIAssistant() {
+  const { data: session } = useSession();
   const { messages, input, handleInputChange, handleSubmit, status } = useChat({
     api: "/api/chat",
     initialMessages: [
@@ -37,6 +32,7 @@ export function AIAssistant() {
     ],
   });
 
+  const { name } = session!.user!;
   const MemoizedMarkdown = React.memo(ReactMarkdown);
 
   const scrollAreaRef = useRef<HTMLDivElement>(null);
@@ -75,12 +71,9 @@ export function AIAssistant() {
   const isProcessing = status === "submitted" || status === "streaming";
 
   return (
-    <Card className="w-1/2 h-[calc(100vh-120px)] flex flex-col">
+    <Card className="max-w-2xl h-[calc(100vh-120px)] flex flex-col">
       <CardHeader>
-        <CardTitle>Asistente de Diabetes</CardTitle>
-        <CardDescription>
-          Pregunta sobre tus tendencias de glucosa, patrones o cualquier duda sobre tu diabetes
-        </CardDescription>
+        <CardTitle>Buenas tardes, {name}</CardTitle>
       </CardHeader>
       <CardContent className="flex-1 overflow-hidden p-0">
         <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
@@ -90,7 +83,7 @@ export function AIAssistant() {
               className={`flex items-start gap-3 mb-4 ${message.role === "user" ? "justify-end" : "justify-start"}`}
             >
               {message.role === "assistant" && (
-                <Avatar className="h-8 w-8">
+                <Avatar className="size-8">
                   <AvatarFallback className="bg-primary text-primary-foreground">
                     <Bot size={16} />
                   </AvatarFallback>
@@ -160,7 +153,7 @@ export function AIAssistant() {
                 })}
               </div>
               {message.role === "user" && (
-                <Avatar className="h-8 w-8">
+                <Avatar className="size-8">
                   <AvatarFallback className="bg-muted">
                     <User size={16} />
                   </AvatarFallback>
@@ -170,13 +163,13 @@ export function AIAssistant() {
           ))}
           {(status === "submitted" || status === "streaming") && (
             <div className="flex items-center gap-2 text-muted-foreground">
-              <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"></div>
+              <div className="size-2 animate-bounce rounded-full bg-muted-foreground"></div>
               <div
-                className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"
+                className="size-2 animate-bounce rounded-full bg-muted-foreground"
                 style={{ animationDelay: "0.2s" }}
               ></div>
               <div
-                className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground"
+                className="size-2 animate-bounce rounded-full bg-muted-foreground"
                 style={{ animationDelay: "0.4s" }}
               ></div>
             </div>
@@ -198,7 +191,7 @@ export function AIAssistant() {
             className="flex-1"
           />
           <Button type="submit" size="icon" disabled={isProcessing || !input.trim()}>
-            <Send className="h-4 w-4" />
+            <Send className="size-4" />
           </Button>
         </form>
       </CardFooter>

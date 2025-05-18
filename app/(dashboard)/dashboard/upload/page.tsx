@@ -149,10 +149,14 @@ export default function UploadPage() {
   }, [eventSource]);
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold tracking-tight mb-6">Subir Datos CSV</h1>
-
-      <Card>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Subir CSV</h1>
+        <p className="text-muted-foreground">
+          Sube un archivo CSV de LibreView para analizar tus datos de glucosa
+        </p>
+      </div>
+      <Card className="max-w-2xl">
         <CardHeader>
           <CardTitle>Subir archivo CSV de FreeStyle Libre</CardTitle>
           <CardDescription>
@@ -178,9 +182,9 @@ export default function UploadPage() {
             {uploadStatus.message && (
               <Alert variant={uploadStatus.success ? "default" : "destructive"}>
                 {uploadStatus.success ? (
-                  <CheckCircle2 className="h-4 w-4" />
+                  <CheckCircle2 className="size-4" />
                 ) : (
-                  <AlertCircle className="h-4 w-4" />
+                  <AlertCircle className="size-4" />
                 )}
                 <AlertTitle>{uploadStatus.success ? "Éxito" : "Error"}</AlertTitle>
                 <AlertDescription>
@@ -207,11 +211,12 @@ export default function UploadPage() {
                   </p>
                 )}
                 <Alert className="mt-2 border-amber-500 bg-amber-50 dark:bg-amber-950/20">
-                  <AlertCircle className="h-4 w-4 text-amber-500" />
+                  <AlertCircle className="size-4 text-amber-500" />
                   <AlertTitle className="text-amber-700 dark:text-amber-400">Importante</AlertTitle>
                   <AlertDescription className="text-amber-700 dark:text-amber-400">
-                    No salga de esta página mientras se procesa el archivo. Si lo hace, el proceso podría interrumpirse.
-                    Si necesita continuar más tarde, puede volver a esta página y cargar el mismo archivo para reanudar el procesamiento.
+                    No salga de esta página mientras se procesa el archivo. Si lo hace, el proceso
+                    podría interrumpirse. Si necesita continuar más tarde, puede volver a esta
+                    página y cargar el mismo archivo para reanudar el procesamiento.
                   </AlertDescription>
                 </Alert>
               </div>
@@ -225,7 +230,7 @@ export default function UploadPage() {
                 </div>
               ) : (
                 <>
-                  <FileUp className="mr-2 h-4 w-4" />
+                  <FileUp className="mr-2 size-4" />
                   Subir archivo
                 </>
               )}

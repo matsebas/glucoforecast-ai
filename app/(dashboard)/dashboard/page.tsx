@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CsvRecord, GlucoseAnalysis } from "@/lib/types";
+import { CsvRecord, MultiPeriodGlucoseAnalysis } from "@/lib/types";
 
 export default function DashboardPage() {
   const [data, setData] = useState({
@@ -32,6 +32,7 @@ export default function DashboardPage() {
     glucoseVariability: 0,
     lastUpdate: new Date(),
     hasData: false,
+    has90daysData: false,
     isConnected: false,
     readings: [] as CsvRecord[],
   });
@@ -44,37 +45,47 @@ export default function DashboardPage() {
   const fetchGlucoseData = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch("/api/glucose?period=day");
+      const response = await fetch("/api/glucose?multiPeriod=true");
 
       if (!response.ok) {
         throw new Error("Error al obtener datos");
       }
 
-      const result = (await response.json()) as GlucoseAnalysis;
+      const result = (await response.json()) as MultiPeriodGlucoseAnalysis;
 
-      if (result.readings && result.readings.length > 0) {
+      const resultDay = result["day"]!;
+
+      setData((prev) => ({
+        ...prev,
+        hasData: resultDay.readings && resultDay.readings.length > 0,
+      }));
+
+      const result90days = result["90days"]!;
+
+      if (result90days.readings && result90days.readings.length > 0) {
         // Obtener la lectura más reciente
-        const latestReading = result.readings[result.readings.length - 1];
+        const latestReading = result90days.readings[result90days.readings.length - 1];
 
-        setData({
+        setData((prev) => ({
+          ...prev,
           currentGlucose: latestReading.glucose,
           // trend: latestReading.trend || "stable",
           trend: "stable",
-          timeInRange: result.metrics.timeInRange,
-          timeAboveRange: result.metrics.timeAboveRange,
-          timeBelowRange: result.metrics.timeBelowRange,
-          averageGlucose: result.metrics.averageGlucose,
-          glucoseVariability: result.metrics.variability || 0,
+          timeInRange: result90days.metrics.timeInRange,
+          timeAboveRange: result90days.metrics.timeAboveRange,
+          timeBelowRange: result90days.metrics.timeBelowRange,
+          averageGlucose: result90days.metrics.averageGlucose,
+          glucoseVariability: result90days.metrics.variability || 0,
           lastUpdate: latestReading.timestamp,
-          hasData: true,
-          isConnected: true,
-          readings: result.readings,
-        });
+          has90daysData: true,
+          isConnected: false,
+          readings: result90days.readings,
+        }));
       } else {
         setData((prev) => ({
           ...prev,
-          hasData: false,
-          isConnected: true,
+          has90daysData: false,
+          isConnected: false,
         }));
       }
     } catch (error) {
@@ -108,7 +119,11 @@ export default function DashboardPage() {
           <p className="text-muted-foreground">Monitoreo de glucosa y estadísticas principales</p>
         </div>
         <div className="flex items-center gap-2">
-          <StatusIndicator isConnected={data.isConnected} hasData={data.hasData} />
+          <StatusIndicator
+            isConnected={data.isConnected}
+            hasData={data.hasData}
+            has90DaysData={data.has90daysData}
+          />
           <Button variant="outline" size="sm" onClick={fetchGlucoseData} disabled={isLoading}>
             <RefreshCw className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`} />
             Actualizar

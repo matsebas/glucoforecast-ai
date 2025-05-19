@@ -1,9 +1,12 @@
 import { LibreConnection, LibreResponse } from "libre-link-unofficial-api/dist/types";
 
-import { csvRecords } from "@/lib/db/schema";
+import { csvRecords, glucoseMetrics } from "@/lib/db/schema";
 
 export type CsvRecord = typeof csvRecords.$inferSelect;
 export type NewCsvRecord = typeof csvRecords.$inferInsert;
+
+export type GlucoseMetricsRecord = typeof glucoseMetrics.$inferSelect;
+export type NewGlucoseMetricsRecord = typeof glucoseMetrics.$inferInsert;
 
 export interface CsvFileRecord {
   device: string;

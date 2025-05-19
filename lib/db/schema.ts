@@ -125,3 +125,25 @@ export const patientSettings = pgTable("patient_settings", {
   targetHigh: integer("target_high").notNull().default(180),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
 });
+
+export const glucoseMetrics = pgTable("glucose_metrics", {
+  id: serial("id").primaryKey(),
+  userId: uuid("userId")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  timePeriod: varchar("time_period", { length: 10 }).notNull(),
+  timeInRange: doublePrecision("time_in_range").notNull(),
+  timeBelowRange: doublePrecision("time_below_range").notNull(),
+  timeAboveRange: doublePrecision("time_above_range").notNull(),
+  averageGlucose: doublePrecision("average_glucose").notNull(),
+  variability: doublePrecision("variability"),
+  calculatedAt: timestamp("calculated_at", { withTimezone: true }).defaultNow().notNull(),
+},
+(table) => {
+  return {
+    uniqUserPeriod: uniqueIndex("glucose_metrics_user_period_idx").on(
+      table.userId,
+      table.timePeriod
+    ),
+  };
+});

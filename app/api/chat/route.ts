@@ -3,6 +3,9 @@ import { streamText } from "ai";
 
 import { auth } from "@/auth";
 import { getUserMultiPeriodGlucoseAnalysis } from "@/lib/services/glucose";
+import { db } from "@/lib/db";
+import { eq } from "drizzle-orm";
+import { patientSettings } from "@/lib/db/schema";
 
 export async function POST(req: Request) {
   try {
@@ -21,11 +24,24 @@ export async function POST(req: Request) {
     let glucoseData = "No hay datos de glucosa disponibles.";
     let dayMetrics = "No hay métricas del último día disponibles.";
     let ninetyDaysMetrics = "No hay métricas de los últimos 90 días disponibles.";
+    
+    // Fetch user settings from the database
     let userISF = "100mg/dL por unidad";
     let userICR = "10 g/unit";
     let userTargetGlucose = "70-180";
-
+    
     try {
+      // Get user settings from database
+      const settings = await db.query.patientSettings.findFirst({
+        where: eq(patientSettings.userId, userId),
+      });
+      
+      if (settings) {
+        userISF = `${settings.isf}mg/dL por unidad`;
+        userICR = `${settings.icr} g/unit`;
+        userTargetGlucose = `${settings.targetLow}-${settings.targetHigh}`;
+      }
+      
       // Usar el servicio centralizado para obtener análisis de glucosa para el último día y los últimos 90 días
       const glucoseAnalysis = await getUserMultiPeriodGlucoseAnalysis(userId, ["day", "90days"]);
 

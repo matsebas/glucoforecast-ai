@@ -27,10 +27,7 @@ const chartConfig = {} satisfies ChartConfig;
 export function GlucoseChart({ data = [] }: GlucoseChartProps) {
   // Formatear los datos para el gráfico
   const chartData = data.map((reading) => ({
-    time: new Date(reading.timestamp).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    }),
+    time: new Date(reading.timestamp).toLocaleString(),
     value: reading.glucose,
     timestamp: reading.timestamp,
   }));

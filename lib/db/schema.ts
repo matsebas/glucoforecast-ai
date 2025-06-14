@@ -7,6 +7,7 @@ import {
   serial,
   text,
   timestamp,
+  unique,
   uniqueIndex,
   uuid,
   varchar,
@@ -91,15 +92,13 @@ export const csvRecords = pgTable(
     device: varchar("device", { length: 255 }),
     serialNumber: varchar("serial_number", { length: 255 }),
   },
-  (table) => {
-    return {
-      uniqTimestampType: uniqueIndex("csv_records_timestamp_type_idx").on(
-        table.userId,
-        table.timestamp,
-        table.recordType
-      ),
-    };
-  }
+  (table) => ({
+    uniqTimestampType: uniqueIndex("csv_records_timestamp_type_idx").on(
+      table.userId,
+      table.timestamp,
+      table.recordType
+    ),
+  })
 );
 
 export const uploadedFiles = pgTable("uploaded_files", {
@@ -114,36 +113,43 @@ export const uploadedFiles = pgTable("uploaded_files", {
   uploadedAt: timestamp("uploaded_at", { withTimezone: true }).defaultNow().notNull(),
 });
 
-export const patientSettings = pgTable("patient_settings", {
-  id: serial("id").primaryKey(),
-  userId: uuid("userId")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  isf: integer("isf").notNull().default(100),
-  icr: integer("icr").notNull().default(10),
-  targetLow: integer("target_low").notNull().default(70),
-  targetHigh: integer("target_high").notNull().default(180),
-  updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
-});
+export const patientSettings = pgTable(
+  "patient_settings",
+  {
+    id: serial("id").primaryKey(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    isf: integer("isf").notNull().default(100),
+    icr: integer("icr").notNull().default(10),
+    targetLow: integer("target_low").notNull().default(70),
+    targetHigh: integer("target_high").notNull().default(180),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    userIdUnique: unique("patient_settings_userId_unique").on(table.userId),
+  })
+);
 
-export const glucoseMetrics = pgTable("glucose_metrics", {
-  id: serial("id").primaryKey(),
-  userId: uuid("userId")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  timePeriod: varchar("time_period", { length: 10 }).notNull(),
-  timeInRange: doublePrecision("time_in_range").notNull(),
-  timeBelowRange: doublePrecision("time_below_range").notNull(),
-  timeAboveRange: doublePrecision("time_above_range").notNull(),
-  averageGlucose: doublePrecision("average_glucose").notNull(),
-  variability: doublePrecision("variability"),
-  calculatedAt: timestamp("calculated_at", { withTimezone: true }).defaultNow().notNull(),
-},
-(table) => {
-  return {
+export const glucoseMetrics = pgTable(
+  "glucose_metrics",
+  {
+    id: serial("id").primaryKey(),
+    userId: uuid("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    timePeriod: varchar("time_period", { length: 10 }).notNull(),
+    timeInRange: doublePrecision("time_in_range").notNull(),
+    timeBelowRange: doublePrecision("time_below_range").notNull(),
+    timeAboveRange: doublePrecision("time_above_range").notNull(),
+    averageGlucose: doublePrecision("average_glucose").notNull(),
+    variability: doublePrecision("variability"),
+    calculatedAt: timestamp("calculated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
     uniqUserPeriod: uniqueIndex("glucose_metrics_user_period_idx").on(
       table.userId,
       table.timePeriod
     ),
-  };
-});
+  })
+);

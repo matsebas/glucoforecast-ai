@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { ArrowUp } from "lucide-react";
+import { SendHorizontalIcon } from "lucide-react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import React, { useEffect, useRef } from "react";
@@ -177,8 +177,14 @@ export function AIAssistant() {
             disabled={isProcessing}
             className="flex-1 h-14 font-light"
           />
-          <Button type="submit" size="icon" disabled={isProcessing || !input.trim()}>
-            <ArrowUp className="size-6" />
+          <Button
+            className="h-14 cursor-pointer"
+            type="submit"
+            size="lg"
+            disabled={isProcessing || !input.trim()}
+            variant="outline"
+          >
+            <SendHorizontalIcon className="size-6" />
           </Button>
         </form>
       </CardFooter>

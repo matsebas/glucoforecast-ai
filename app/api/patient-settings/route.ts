@@ -1,11 +1,8 @@
-import { eq } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 import { ZodError } from "zod";
 
 import { auth } from "@/auth";
-import { db } from "@/lib/db";
-import { patientSettings } from "@/lib/db/schema";
-import { patientSettingsSchema } from "@/lib/validations/patient-settings";
+import { getPatientSettings, parsePatientSettings, savePatientSettingsFromObject } from "@/lib/services/settings";
 
 /**
  * GET /api/patient-settings
@@ -21,29 +18,24 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    // Obtener configuración del paciente
-    const settings = await db.query.patientSettings.findFirst({
-      where: eq(patientSettings.userId, userId),
-    });
+    // Obtener configuración del paciente usando el servicio
+    const settings = await getPatientSettings(userId);
 
-    // Si no hay configuración, devolver valores por defecto
-    if (!settings) {
-      return NextResponse.json({
-        isf: 100,
-        icr: 10,
-        targetLow: 70,
-        targetHigh: 180,
-      });
-    }
-
-    return NextResponse.json({
-      isf: settings.isf,
-      icr: settings.icr,
-      targetLow: settings.targetLow,
-      targetHigh: settings.targetHigh,
-    });
+    return NextResponse.json(settings);
   } catch (error) {
     console.error("Error al obtener configuración del paciente:", error);
+    
+    // Manejo específico para configuración no encontrada
+    if (error instanceof Error && error.message === "PATIENT_SETTINGS_NOT_CONFIGURED") {
+      return NextResponse.json(
+        {
+          error: "PATIENT_SETTINGS_NOT_CONFIGURED",
+          message: "Los parámetros de configuración del paciente no están establecidos. Es necesario configurarlos antes de continuar.",
+        },
+        { status: 404 }
+      );
+    }
+    
     return NextResponse.json(
       {
         error: "Error al obtener configuración del paciente",
@@ -74,39 +66,12 @@ export async function POST(req: NextRequest) {
 
     const userId = session.user.id;
 
-    // Obtener datos del cuerpo de la solicitud
+    // Obtener y validar datos del cuerpo de la solicitud
     const body = await req.json();
+    const validatedSettings = parsePatientSettings(body);
 
-    // Validar datos con Zod
-    const validatedData = patientSettingsSchema.parse(body);
-
-    // Buscar configuración existente
-    const existingSettings = await db.query.patientSettings.findFirst({
-      where: eq(patientSettings.userId, userId),
-    });
-
-    if (existingSettings) {
-      // Actualizar configuración existente
-      await db
-        .update(patientSettings)
-        .set({
-          isf: validatedData.isf,
-          icr: validatedData.icr,
-          targetLow: validatedData.targetLow,
-          targetHigh: validatedData.targetHigh,
-          updatedAt: new Date(),
-        })
-        .where(eq(patientSettings.userId, userId));
-    } else {
-      // Crear nueva configuración
-      await db.insert(patientSettings).values({
-        userId,
-        isf: validatedData.isf,
-        icr: validatedData.icr,
-        targetLow: validatedData.targetLow,
-        targetHigh: validatedData.targetHigh,
-      });
-    }
+    // Guardar configuración usando el servicio
+    await savePatientSettingsFromObject(userId, validatedSettings);
 
     return NextResponse.json({
       success: true,

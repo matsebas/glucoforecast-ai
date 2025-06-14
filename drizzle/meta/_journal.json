@@ -85,6 +85,13 @@
       "when": 1749925348504,
       "tag": "0011_right_roland_deschain",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1749933014760,
+      "tag": "0012_thin_jocasta",
+      "breakpoints": true
     }
   ]
 }

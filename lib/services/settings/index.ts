@@ -11,6 +11,7 @@ export type PatientSettings = {
   icr: number;
   targetLow: number;
   targetHigh: number;
+  penIncrement: number;
 };
 
 /**
@@ -45,6 +46,7 @@ export async function getPatientSettings(userId: string): Promise<PatientSetting
     icr: settings.icr,
     targetLow: settings.targetLow,
     targetHigh: settings.targetHigh,
+    penIncrement: settings.penIncrement,
   };
 }
 
@@ -62,7 +64,8 @@ export async function savePatientSettingsFromObject(
     settings.isf,
     settings.icr,
     settings.targetLow,
-    settings.targetHigh
+    settings.targetHigh,
+    settings.penIncrement
   );
 }
 
@@ -76,13 +79,15 @@ export async function savePatientSettingsFromObject(
  * @param icr Relación Insulina-Carbohidratos
  * @param targetLow Límite inferior del rango objetivo
  * @param targetHigh Límite superior del rango objetivo
+ * @param penIncrement Incremento de la lapicera de insulina
  */
 export async function savePatientSettings(
   userId: string,
   isf: number,
   icr: number,
   targetLow: number,
-  targetHigh: number
+  targetHigh: number,
+  penIncrement: number
 ): Promise<void> {
   // Crear o actualizar configuración en una sola operación
   await db
@@ -93,6 +98,7 @@ export async function savePatientSettings(
       icr,
       targetLow,
       targetHigh,
+      penIncrement,
       updatedAt: new Date(),
     })
     .onConflictDoUpdate({
@@ -102,6 +108,7 @@ export async function savePatientSettings(
         icr,
         targetLow,
         targetHigh,
+        penIncrement,
         updatedAt: new Date(),
       },
     });

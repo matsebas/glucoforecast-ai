@@ -124,6 +124,7 @@ export const patientSettings = pgTable(
     icr: integer("icr").notNull().default(10),
     targetLow: integer("target_low").notNull().default(70),
     targetHigh: integer("target_high").notNull().default(180),
+    penIncrement: doublePrecision("pen_increment").notNull().default(1.0),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => ({

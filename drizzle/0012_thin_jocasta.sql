@@ -1,0 +1,1 @@
+ALTER TABLE "patient_settings" ADD COLUMN "pen_increment" double precision DEFAULT 1 NOT NULL;

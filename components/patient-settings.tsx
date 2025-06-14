@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { patientSettingsSchema } from "@/lib/validations/patient-settings";
 
@@ -31,6 +32,8 @@ export function PatientSettings() {
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    watch,
   } = useForm<PatientSettingsFormValues>({
     resolver: zodResolver(patientSettingsSchema),
     defaultValues: {
@@ -38,6 +41,7 @@ export function PatientSettings() {
       icr: 10,
       targetLow: 70,
       targetHigh: 180,
+      penIncrement: 1,
     },
   });
 
@@ -184,6 +188,29 @@ export function PatientSettings() {
             )}
             <p className="text-xs text-muted-foreground">
               El intervalo deseado para sus niveles de glucosa en sangre
+            </p>
+          </div>
+
+          <Separator />
+
+          <div className="grid gap-2">
+            <Label htmlFor="pen-increment">Incremento de la Lapicera</Label>
+            <Select
+              value={watch("penIncrement")?.toString()}
+              onValueChange={(value) => setValue("penIncrement", parseFloat(value))}
+              disabled={isLoading}
+            >
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Seleccionar" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0.5">0.5 unidades</SelectItem>
+                <SelectItem value="1">1 unidad</SelectItem>
+              </SelectContent>
+            </Select>
+            {errors.penIncrement && <p className="text-sm text-destructive">{errors.penIncrement.message}</p>}
+            <p className="text-xs text-muted-foreground">
+              El incremento mínimo que permite su lapicera de insulina
             </p>
           </div>
           <Separator />

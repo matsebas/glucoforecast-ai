@@ -32,7 +32,7 @@ const MarkdownComponents: Components = {
   ),
   hr: () => <Separator />,
   blockquote: ({ children }) => (
-    <Accordion type="single" collapsible className="w-full" defaultValue="item-1">
+    <Accordion type="single" collapsible className="w-full">
       <AccordionItem value="item-1">
         <AccordionTrigger className="cursor-pointer">Información detallada</AccordionTrigger>
         <AccordionContent className="italic font-extralight">{children}</AccordionContent>

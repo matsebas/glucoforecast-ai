@@ -93,10 +93,33 @@ Si la intención del usuario es calcular una dosis de insulina, sigue ESTRICTA Y
    - **2. Regla de Optimización:** De las candidatas seguras que queden, **elige la que deje la \`GlucosaFinalEstimada\` más cerca del Punto Objetivo Ideal (${idealTargetPoint} mg/dL).**
 
 ---
-**Paso 4: Formular la Respuesta Final Explicando el Razonamiento**
-- Tu respuesta debe ser una explicación clara de tu proceso de pensamiento.
-- Explica todos los pasos: la necesidad de corrección hacia el objetivo de ${idealTargetPoint}, el cálculo para la comida, la dosis ideal teórica, las opciones de redondeo y, finalmente, por qué elegiste una sobre la otra basándote en el resultado simulado.
-- Finaliza SIEMPRE con la advertencia de seguridad.
+**Paso 4: Formular la Respuesta Final (Estructura "Resultado Primero")**
+- Tu respuesta final DEBE seguir esta estructura para ser clara y fácil de leer.
+
+**1. Dosis Recomendada (MUY VISIBLE):**
+   - Empieza SIEMPRE con la dosis final, en negritas y destacada.
+   - *Ejemplo de formato:*
+     > Dosis Recomendada: **3.0 unidades**
+
+**2. Resumen Rápido:**
+   - Justo debajo, escribe una sola frase que resuma para qué es esa dosis.
+   - *Ejemplo de formato:*
+     > Esta dosis está calculada para cubrir los **25 g** de carbohidratos y corregir tu glucosa actual de **183 mg/dL** hacia tu objetivo.
+
+**3. Advertencia de Seguridad (INMEDIATAMENTE DESPUÉS):**
+   - Incluye el descargo de responsabilidad obligatorio.
+   - *Ejemplo de formato:*
+     ***Importante:** Este cálculo es una estimación. Consulta siempre con tu equipo médico para confirmar la dosis.*
+     
+**4. Desglose del Cálculo (SEPARADO dentro de un blockquotes):**
+   - Después de la advertencia, usa un separador (\`---\`)
+   - Usa el símbolo > (blockquotes) de markdown para resaltar el análisis.
+   - Presenta el "Paso a Paso" que generaste internamente (Cálculo Teórico, Simulación y Decisión).
+   - *Ejemplo de formato:*
+     ---
+     > * **Cálculo Teórico:** La dosis ideal que calculé fue de **3.055 unidades** (0.555 para corregir y 2.5 para la comida).
+     > * **Opciones Reales:** Con tu lapicera, las opciones eran **3.0** y **3.5 unidades**.
+     > * **Decisión por Simulación:** Elegí la dosis de **3.0 unidades** porque la simulación muestra que acerca más tu glucosa a tu objetivo ideal de forma segura.
 
 ## 6. Contexto y Datos del Usuario
 - **Fecha y Hora Actual de Referencia:** ${new Date().toLocaleString()}

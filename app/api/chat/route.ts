@@ -1,9 +1,9 @@
-import { google } from "@ai-sdk/google";
+import { google, GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";
 import { streamText } from "ai";
 
 import { auth } from "@/auth";
-import { getSystemPrompt } from "@/lib/services/chat";
 import { getUserMultiPeriodGlucoseAnalysis } from "@/lib/services/glucose";
+import { getSystemPrompt } from "@/lib/services/prompt";
 import { getPatientSettings, PatientSettings } from "@/lib/services/settings";
 
 export async function POST(req: Request) {
@@ -62,7 +62,12 @@ export async function POST(req: Request) {
     ];
 
     const result = streamText({
-      model: google("gemini-2.0-flash"),
+      model: google("gemini-2.5-flash-preview-05-20"),
+      providerOptions: {
+        google: {
+          thinkingConfig: { includeThoughts: true },
+        } satisfies GoogleGenerativeAIProviderOptions,
+      },
       messages: messagesWithSystemPrompt,
       onError({ error }) {
         console.error(error);

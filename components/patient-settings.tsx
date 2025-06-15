@@ -17,7 +17,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { patientSettingsSchema } from "@/lib/validations/patient-settings";
 
@@ -208,7 +214,9 @@ export function PatientSettings() {
                 <SelectItem value="1">1 unidad</SelectItem>
               </SelectContent>
             </Select>
-            {errors.penIncrement && <p className="text-sm text-destructive">{errors.penIncrement.message}</p>}
+            {errors.penIncrement && (
+              <p className="text-sm text-destructive">{errors.penIncrement.message}</p>
+            )}
             <p className="text-xs text-muted-foreground">
               El incremento mínimo que permite su lapicera de insulina
             </p>

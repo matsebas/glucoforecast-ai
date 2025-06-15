@@ -2,133 +2,24 @@
 
 import { useChat } from "@ai-sdk/react";
 import { SendHorizontalIcon } from "lucide-react";
-import Image from "next/image";
 import { useSession } from "next-auth/react";
 import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Separator } from "@/components/ui/separator";
 
-import type { Components } from "react-markdown";
+import { ErrorMessage } from "./error-message";
+import { LoadingIndicator } from "./loading-indicator";
+import { MarkdownComponents } from "./markdown-components";
+import { MessagePart } from "./message-part";
 
-const MarkdownComponents: Components = {
-  p: ({ children }) => <p className="mb-1.5 last:mb-0">{children}</p>,
-  ul: ({ children }) => <ul className="list-disc pl-4 mb-1.5">{children}</ul>,
-  ol: ({ children }) => <ol className="list-decimal pl-4 mb-1.5">{children}</ol>,
-  a: ({ href, children }) => (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="text-primary underline hover:text-primary/70 transition-colors"
-    >
-      {children}
-    </a>
-  ),
-  hr: () => <Separator />,
-  blockquote: ({ children }) => (
-    <Accordion type="single" collapsible className="w-full">
-      <AccordionItem value="item-1">
-        <AccordionTrigger className="cursor-pointer">Información detallada</AccordionTrigger>
-        <AccordionContent className="italic font-extralight">{children}</AccordionContent>
-      </AccordionItem>
-    </Accordion>
-  ),
-};
-
-const LoadingIndicator = React.memo(() => (
-  <div className="flex items-center gap-2 text-muted-foreground">
-    <div className="size-2 animate-bounce rounded-full bg-muted-foreground"></div>
-    <div
-      className="size-2 animate-bounce rounded-full bg-muted-foreground"
-      style={{ animationDelay: "0.2s" }}
-    ></div>
-    <div
-      className="size-2 animate-bounce rounded-full bg-muted-foreground"
-      style={{ animationDelay: "0.4s" }}
-    ></div>
-  </div>
-));
-
-LoadingIndicator.displayName = "LoadingIndicator";
-
-const ErrorMessage = React.memo(() => (
-  <div className="rounded-lg px-3 py-2 bg-destructive text-destructive-foreground">
-    Ocurrió un error al procesar tu solicitud. Por favor, intenta nuevamente.
-  </div>
-));
-
-ErrorMessage.displayName = "ErrorMessage";
-
-interface MessagePartProps {
-  part: {
-    type: string;
-    text?: string;
-    source?: { id: string; url: string; title?: string };
-    reasoning?: string;
-    toolInvocation?: { toolName: string };
-    mimeType?: string;
-    data?: string;
-  };
-  index: number;
-}
-
-const MessagePart = React.memo<MessagePartProps>(({ part, index }) => {
-  switch (part.type) {
-    case "text":
-      return (
-        <ReactMarkdown key={`text-${index}`} components={MarkdownComponents}>
-          {part.text}
-        </ReactMarkdown>
-      );
-    case "source":
-      return part.source ? (
-        <span key={`source-${part.source.id}`}>
-          [
-          <a href={part.source.url} target="_blank" rel="noopener noreferrer">
-            {part.source.title ?? new URL(part.source.url).hostname}
-          </a>
-          ]
-        </span>
-      ) : null;
-    case "reasoning":
-      return (
-        <div key={`reasoning-${index}`} className="text-muted-foreground italic">
-          Razonamiento: {part.reasoning}
-        </div>
-      );
-    case "tool-invocation":
-      return part.toolInvocation ? (
-        <div key={`tool-${index}`} className="text-blue-600 font-medium">
-          Ejecutando: {part.toolInvocation.toolName}
-        </div>
-      ) : null;
-    case "file":
-      return (
-        <Image
-          key={`file-${index}`}
-          src={`data:${part.mimeType};base64,${part.data}`}
-          alt="Imagen generada"
-          width={300}
-          height={200}
-          className="rounded-lg"
-        />
-      );
-    default:
-      return null;
-  }
-});
-
-MessagePart.displayName = "MessagePart";
 
 export function AIAssistant() {
   const { data: session } = useSession();
-  const { messages, input, handleInputChange, handleSubmit, status } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, status, addToolResult } = useChat({
     api: "/api/chat",
     initialMessages: [
       {
@@ -209,7 +100,12 @@ export function AIAssistant() {
                 >
                   {messageParts.length > 0 ? (
                     messageParts.map((part, index) => (
-                      <MessagePart key={`part-${index}`} part={part} index={index} />
+                      <MessagePart
+                        key={`part-${index}`}
+                        part={part}
+                        index={index}
+                        addToolResult={addToolResult}
+                      />
                     ))
                   ) : (
                     <ReactMarkdown components={MarkdownComponents}>{messageContent}</ReactMarkdown>

@@ -1,5 +1,6 @@
 import { google, GoogleGenerativeAIProviderOptions } from "@ai-sdk/google";
 import { streamText } from "ai";
+import { z } from "zod";
 
 import { auth } from "@/auth";
 import { getUserMultiPeriodGlucoseAnalysis } from "@/lib/services/glucose";
@@ -69,6 +70,14 @@ export async function POST(req: Request) {
         } satisfies GoogleGenerativeAIProviderOptions,
       },
       messages: messagesWithSystemPrompt,
+      tools: {
+        askForConfirmation: {
+          description: "Preguntar al usuario por confirmación.",
+          parameters: z.object({
+            message: z.string().describe("El mensaje para pedir confirmación."),
+          }),
+        },
+      },
       onError({ error }) {
         console.error(error);
       },

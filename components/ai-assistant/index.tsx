@@ -16,7 +16,6 @@ import { LoadingIndicator } from "./loading-indicator";
 import { MarkdownComponents } from "./markdown-components";
 import { MessagePart } from "./message-part";
 
-
 export function AIAssistant() {
   const { data: session } = useSession();
   const { messages, input, handleInputChange, handleSubmit, status, addToolResult } = useChat({
@@ -87,15 +86,15 @@ export function AIAssistant() {
             return (
               <div
                 key={message.id}
-                className={`flex items-start gap-3 mb-4 ${
+                className={`flex gap-3 mb-4 ${
                   message.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
                 <div
-                  className={`rounded-t-4xl rounded-bl-4xl rounded-br-sm px-3 py-2 max-w-full font-light leading-7 list-outside ${
+                  className={`font-light leading-7 ${
                     message.role === "user"
-                      ? "bg-foreground/10 text-foreground/90 border"
-                      : "bg-transparent text-foreground/75"
+                      ? "max-w-3/4 py-3 px-4 rounded-l-3xl rounded-br-3xl rounded-tr-[0.25rem] bg-foreground/10 text-foreground/90"
+                      : "max-w-full"
                   }`}
                 >
                   {messageParts.length > 0 ? (

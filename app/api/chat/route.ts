@@ -66,7 +66,10 @@ export async function POST(req: Request) {
       model: google("gemini-2.5-flash-preview-05-20"),
       providerOptions: {
         google: {
-          thinkingConfig: { includeThoughts: true },
+          thinkingConfig: {
+            includeThoughts: true,
+            thinkingBudget: 1024,
+          },
         } satisfies GoogleGenerativeAIProviderOptions,
       },
       messages: messagesWithSystemPrompt,

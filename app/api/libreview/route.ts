@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
     // Obtener datos del cuerpo de la solicitud
     const body = await req.json();
-    const { email, password, days = 90 } = body;
+    const { email, password } = body;
 
     // Validar datos requeridos
     if (!email || !password) {
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Sincronizar datos de LibreView
-    const result = await syncLibreLinkData(userId, email, password, days);
+    const result = await syncLibreLinkData(userId, email, password);
 
     return NextResponse.json(result);
   } catch (error) {

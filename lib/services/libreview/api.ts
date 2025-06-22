@@ -1,10 +1,10 @@
 import { LibreLinkClient } from "libre-link-unofficial-api";
 import { LibreConnection } from "libre-link-unofficial-api/dist/types";
-import { eq } from "drizzle-orm";
 
-import { db } from "@/lib/db";
-import { csvRecords } from "@/lib/db/schema";
-import { LibreConnectionsResponse, NewCsvRecord, UploadResponse } from "@/lib/types";
+import { LibreConnectionsResponse, LibreUserData, UploadResponse } from "@/lib/types";
+
+import { parseGlucoseReadings } from "./parsers";
+import { GlucoseRecordProcessor } from "./processor";
 
 /**
  * Clase para gestionar la conexión con LibreLink API
@@ -21,56 +21,77 @@ export class LibreLinkService {
    * Inicializa y autentica el cliente de LibreLink
    * @param email Email del usuario en LibreLink
    * @param password Contraseña del usuario en LibreLink
-   * @returns true si la autenticación fue exitosa
+   * @returns LibreUserData si la autenticación fue exitosa
    */
-  async authenticate(email: string, password: string): Promise<boolean> {
+  async authenticate(email: string, password: string): Promise<LibreUserData> {
+    if (!email || !password) {
+      return Promise.reject(new Error("Email y contraseña son obligatorios"));
+    }
+
     try {
+      // Inicializar el cliente
       this.client = new LibreLinkClient({ email, password });
-      await this.client.login();
-      return true;
+
+      // Intentar login
+      const response = await this.client.login();
+
+      // Validar respuesta de login
+      if (!response || response.status !== 0) {
+        return Promise.reject(
+          new Error(
+            `Autenticación fallida con LibreLink. Estado: ${response?.status || "desconocido"}`
+          )
+        );
+      }
+
+      // Obtener conexiones
+      const connectionData: LibreConnectionsResponse = await this.client.fetchConnections();
+
+      // Validar respuesta de conexiones
+      if (!connectionData || connectionData.status !== 0) {
+        return Promise.reject(
+          new Error(
+            `No se pudieron obtener las conexiones de LibreLink. Estado: ${connectionData?.status || "desconocido"}`
+          )
+        );
+      }
+
+      // Validar que existan conexiones
+      if (!connectionData.data || connectionData.data.length === 0) {
+        return Promise.reject(
+          new Error("No se encontraron conexiones asociadas a esta cuenta de LibreLink.")
+        );
+      }
+
+      // Construcción del objeto de retorno
+      return {
+        id: response.data.user.id,
+        email: response.data.user.email,
+        firstName: response.data.user.firstName,
+        lastName: response.data.user.lastName,
+        connections: connectionData.data,
+      };
     } catch (error) {
-      console.error("Error al autenticar con LibreLink:", error);
-      return false;
+      const errorMessage = error instanceof Error ? error.message : "Error desconocido";
+      return Promise.reject(
+        Error(`Error al autenticar con LibreLink: ${errorMessage}`, { cause: error })
+      );
     }
-  }
-
-  async getPatientsList(): Promise<LibreConnection[]> {
-    if (!this.client) {
-      throw new Error("No se ha autenticado con LibreLink. Llame a authenticate() primero.");
-    }
-
-    const { data: connections }: LibreConnectionsResponse = await this.client.fetchConnections();
-
-    if (!connections) {
-      throw new Error("No se pudieron obtener las conexiones de LibreLink");
-    }
-
-    return connections;
   }
 
   /**
    * Obtiene las lecturas de glucosa desde LibreLink y las guarda en la base de datos
-   * @param days Número de días de datos a obtener (por defecto 90)
+   * @param patientConnection Conexión del paciente obtenida de LibreLink
    * @returns Respuesta con información sobre el proceso
    */
-  async fetchAndStoreGlucoseData(days: number = 90): Promise<UploadResponse> {
+  async fetchAndStoreGlucoseData(patientConnection: LibreConnection): Promise<UploadResponse> {
     if (!this.client) {
-      throw new Error("No se ha autenticado con LibreLink. Llame a authenticate() primero.");
+      return Promise.reject(
+        new Error("No se ha autenticado con LibreLink. Llame a authenticate() primero.")
+      );
     }
 
     try {
-      // Obtener datos de glucosa de LibreLink
-      const patientData = this.client.me;
-
-      if (!patientData) {
-        return {
-          success: false,
-          message: "No se pudieron obtener los datos del paciente de LibreLink",
-        };
-      }
-      const connectionData: LibreConnectionsResponse = await this.client.fetchConnections();
-      const patientConnection = connectionData.data[0];
-
       if (!patientConnection) {
         return {
           success: false,
@@ -78,71 +99,35 @@ export class LibreLinkService {
         };
       }
 
-      const glucoseData = await this.client.logbook();
+      const glucoseReadings = await this.client.history();
 
-      if (!glucoseData || !glucoseData.length) {
+      if (!glucoseReadings || !glucoseReadings.length) {
         return {
           success: false,
           message: "No se encontraron datos de glucosa en LibreLink",
         };
       }
 
-      // Transformar datos al formato esperado por la aplicación
-      const recordsToInsert: NewCsvRecord[] = [];
-
-      // Procesar lecturas de glucosa
-      for (const reading of glucoseData) {
-        const timestamp = new Date(reading.timestamp);
-
-        // Crear registro para la base de datos
-        const record: NewCsvRecord = {
-          userId: this.userId,
-          timestamp,
-          recordType: "1", // 0 para histórico, 1 para escaneo
-          device: patientConnection.patientDevice.did,
-          serialNumber: patientConnection.sensor.sn || "Unknown",
-          glucose: reading.value,
-          rapidInsulin: null,
-          longInsulin: null,
-          carbs: null,
-          notes: null,
-        };
-
-        recordsToInsert.push(record);
-      }
-
-      // Obtener registros existentes para evitar duplicados
-      const existingRecords = await db
-        .select({
-          userId: csvRecords.userId,
-          timestamp: csvRecords.timestamp,
-          recordType: csvRecords.recordType,
-        })
-        .from(csvRecords)
-        .where(eq(csvRecords.userId, this.userId));
-
-      // Crear un Set para búsquedas rápidas
-      const existingSet = new Set(
-        existingRecords.map((r) => `${r.userId}-${r.timestamp.toISOString()}-${r.recordType}`)
+      const { records, errors } = parseGlucoseReadings(
+        glucoseReadings,
+        this.userId,
+        patientConnection
       );
 
-      // Filtrar duplicados
-      const uniqueRecords = recordsToInsert.filter((record) => {
-        const key = `${record.userId}-${record.timestamp.toISOString()}-${record.recordType}`;
-        return !existingSet.has(key);
-      });
-
-      // Insertar registros únicos en la base de datos
-      if (uniqueRecords.length > 0) {
-        await db.insert(csvRecords).values(uniqueRecords);
+      // Log errores de parsing si existen
+      if (errors.length > 0) {
+        console.warn(
+          `Errores de parsing en API LibreLink: ${errors.length} registros fallaron`,
+          errors
+        );
       }
 
-      return {
-        success: true,
-        message: `Se procesaron ${recordsToInsert.length} lecturas, se insertaron ${uniqueRecords.length} nuevas lecturas desde LibreLink`,
-        count: uniqueRecords.length,
-        totalProcessed: recordsToInsert.length,
-      };
+      // Usar el procesador centralizado
+      const processor = new GlucoseRecordProcessor(this.userId, {
+        sourceName: "LibreLink API",
+      });
+
+      return await processor.processAndStore(records);
     } catch (error) {
       console.error("Error al obtener datos de LibreLink:", error);
       throw error instanceof Error
@@ -157,14 +142,12 @@ export class LibreLinkService {
  * @param userId ID del usuario
  * @param email Email del usuario en LibreLink
  * @param password Contraseña del usuario en LibreLink
- * @param days Número de días de datos a obtener
  * @returns Respuesta con información sobre el proceso
  */
 export async function syncLibreLinkData(
   userId: string,
   email: string,
-  password: string,
-  days: number = 90
+  password: string
 ): Promise<UploadResponse> {
   const service = new LibreLinkService(userId);
 
@@ -176,5 +159,5 @@ export async function syncLibreLinkData(
     };
   }
 
-  return await service.fetchAndStoreGlucoseData(days);
+  return await service.fetchAndStoreGlucoseData(authenticated.connections[0]); // Usar la primera conexión disponible
 }

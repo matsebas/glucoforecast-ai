@@ -86,3 +86,11 @@ export interface LibreConnectionsResponse extends LibreResponse {
   data: LibreConnection[];
   ticket: Ticket;
 }
+
+export interface LibreUserData {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  connections: LibreConnection[];
+}

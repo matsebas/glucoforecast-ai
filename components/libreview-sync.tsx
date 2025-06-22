@@ -16,13 +16,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 
 interface LibreViewSyncFormValues {
@@ -115,21 +108,6 @@ export function LibreViewSync() {
               {...register("password", { required: "La contraseña es obligatoria" })}
             />
             {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="days">Período de datos a importar</Label>
-            <Select defaultValue="90" {...register("days")}>
-              <SelectTrigger>
-                <SelectValue placeholder="Selecciona un período" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="7">Últimos 7 días</SelectItem>
-                <SelectItem value="14">Últimos 14 días</SelectItem>
-                <SelectItem value="30">Últimos 30 días</SelectItem>
-                <SelectItem value="90">Últimos 90 días</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
 
           <div className="text-sm text-muted-foreground">

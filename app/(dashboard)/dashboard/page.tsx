@@ -35,12 +35,37 @@ export default function DashboardPage() {
     has90daysData: false,
     isConnected: false,
     readings: [] as CsvRecord[],
+    hasPatientSettings: false,
   });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchGlucoseData();
+    fetchPatientSettings();
   }, []);
+
+  const fetchPatientSettings = async () => {
+    try {
+      const response = await fetch("/api/patient-settings");
+      if (response.ok) {
+        setData((prev) => ({
+          ...prev,
+          hasPatientSettings: true,
+        }));
+      } else {
+        setData((prev) => ({
+          ...prev,
+          hasPatientSettings: false,
+        }));
+      }
+    } catch (error) {
+      console.error("Error fetching patient settings:", error);
+      setData((prev) => ({
+        ...prev,
+        hasPatientSettings: false,
+      }));
+    }
+  };
 
   const fetchGlucoseData = async () => {
     setIsLoading(true);
@@ -123,6 +148,7 @@ export default function DashboardPage() {
             isConnected={data.isConnected}
             hasData={data.hasData}
             has90DaysData={data.has90daysData}
+            hasPatientSettings={data.hasPatientSettings}
           />
           <Button variant="outline" size="sm" onClick={fetchGlucoseData} disabled={isLoading}>
             <RefreshCw className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`} />

@@ -20,7 +20,8 @@ export const { handlers, auth } = NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 días
+    maxAge: 5 * 60, // 5 minutos
+    // maxAge: 2 * 24 * 60 * 60, // 2 días
   },
   providers: [
     CredentialsProvider({

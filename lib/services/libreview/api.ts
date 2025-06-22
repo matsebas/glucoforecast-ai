@@ -1,6 +1,9 @@
 import { LibreLinkClient } from "libre-link-unofficial-api";
 import { LibreConnection } from "libre-link-unofficial-api/dist/types";
+import { eq } from "drizzle-orm";
 
+import { db } from "@/lib/db";
+import { csvRecords } from "@/lib/db/schema";
 import { LibreConnectionsResponse, NewCsvRecord, UploadResponse } from "@/lib/types";
 
 /**
@@ -108,40 +111,37 @@ export class LibreLinkService {
         recordsToInsert.push(record);
       }
 
-      recordsToInsert.forEach((record) => {
-        console.info("Insertando registro:", record);
+      // Obtener registros existentes para evitar duplicados
+      const existingRecords = await db
+        .select({
+          userId: csvRecords.userId,
+          timestamp: csvRecords.timestamp,
+          recordType: csvRecords.recordType,
+        })
+        .from(csvRecords)
+        .where(eq(csvRecords.userId, this.userId));
+
+      // Crear un Set para búsquedas rápidas
+      const existingSet = new Set(
+        existingRecords.map((r) => `${r.userId}-${r.timestamp.toISOString()}-${r.recordType}`)
+      );
+
+      // Filtrar duplicados
+      const uniqueRecords = recordsToInsert.filter((record) => {
+        const key = `${record.userId}-${record.timestamp.toISOString()}-${record.recordType}`;
+        return !existingSet.has(key);
       });
 
-      // // Obtener registros existentes para evitar duplicados
-      // const existingRecords = await db
-      //   .select({
-      //     userId: csvRecords.userId,
-      //     timestamp: csvRecords.timestamp,
-      //     recordType: csvRecords.recordType,
-      //   })
-      //   .from(csvRecords)
-      //   .where(eq(csvRecords.userId, this.userId));
-      //
-      // // Crear un Set para búsquedas rápidas
-      // const existingSet = new Set(
-      //   existingRecords.map((r) => `${r.userId}-${r.timestamp.toISOString()}-${r.recordType}`)
-      // );
-      //
-      // // Filtrar duplicados
-      // const uniqueRecords = recordsToInsert.filter((record) => {
-      //   const key = `${record.userId}-${record.timestamp.toISOString()}-${record.recordType}`;
-      //   return !existingSet.has(key);
-      // });
-      //
-      // // Insertar registros únicos en la base de datos
-      // if (uniqueRecords.length > 0) {
-      //   await db.insert(csvRecords).values(uniqueRecords);
-      // }
+      // Insertar registros únicos en la base de datos
+      if (uniqueRecords.length > 0) {
+        await db.insert(csvRecords).values(uniqueRecords);
+      }
 
       return {
         success: true,
-        message: `Se importaron ${recordsToInsert.length} lecturas de glucosa desde LibreLink`,
-        count: recordsToInsert.length,
+        message: `Se procesaron ${recordsToInsert.length} lecturas, se insertaron ${uniqueRecords.length} nuevas lecturas desde LibreLink`,
+        count: uniqueRecords.length,
+        totalProcessed: recordsToInsert.length,
       };
     } catch (error) {
       console.error("Error al obtener datos de LibreLink:", error);

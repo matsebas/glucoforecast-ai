@@ -45,6 +45,7 @@ export interface UploadResponse {
   message: string;
   count?: number;
   fileId?: number;
+  totalProcessed?: number;
 }
 
 export interface GlucoseMetrics {

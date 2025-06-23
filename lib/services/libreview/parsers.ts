@@ -61,6 +61,7 @@ export function parseCsvFileRecord(
       longInsulin: null,
       carbs: null,
       notes: null,
+      glucose: 0,
     };
 
     // Procesar según el tipo de registro basado en la tabla proporcionada

@@ -41,7 +41,7 @@ export async function GET(request: Request) {
       // Usar el servicio centralizado para obtener análisis de glucosa para un período específico
       const glucoseAnalysis = await getUserGlucoseAnalysis(userId, period || "all");
 
-      console.debug(">> GET: Análisis de glucosa obtenido:", glucoseAnalysis);
+      console.info(">> GET: Análisis de glucosa obtenido:", glucoseAnalysis);
 
       // Devolver la respuesta estructurada
       return NextResponse.json({

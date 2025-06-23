@@ -6,14 +6,7 @@ import { useEffect, useState } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
@@ -157,15 +150,9 @@ export default function UploadPage() {
         </p>
       </div>
       <Card className="max-w-2xl">
-        <CardHeader>
-          <CardTitle>Subir archivo CSV de FreeStyle Libre</CardTitle>
-          <CardDescription>
-            Suba un archivo CSV exportado desde LibreView para analizar sus datos de glucosa
-          </CardDescription>
-        </CardHeader>
         <CardContent>
           <form onSubmit={handleUpload} className="space-y-4">
-            <div className="grid w-full max-w-sm items-center gap-1.5">
+            <div className="grid w-full max-w-sm items-center gap-4">
               <Label htmlFor="csv-file">Archivo CSV</Label>
               <Input
                 id="csv-file"

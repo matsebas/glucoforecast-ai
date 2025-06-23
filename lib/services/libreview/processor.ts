@@ -7,6 +7,13 @@ import { updateProgress } from "@/lib/services/progress";
 import { NewCsvRecord, UploadResponse } from "@/lib/types";
 
 /**
+ * Genera una clave única para un registro CSV
+ */
+function generateRecordKey(record: Pick<NewCsvRecord, 'userId' | 'timestamp' | 'recordType'>): string {
+  return `${record.userId}-${record.timestamp.toISOString()}-${record.recordType}`;
+}
+
+/**
  * Opciones para el procesador de registros
  */
 export interface RecordProcessorOptions {
@@ -51,30 +58,36 @@ export class GlucoseRecordProcessor {
       // Reportar progreso inicial
       this.reportProgress(0, 0, totalRecords);
 
-      // Obtener todos los registros existentes en una sola consulta para optimizar
-      const existingRecords = await db
-        .select({
-          userId: csvRecords.userId,
-          timestamp: csvRecords.timestamp,
-          recordType: csvRecords.recordType,
-        })
-        .from(csvRecords)
-        .where(eq(csvRecords.userId, this.userId));
+      // Filtrar registros que ya existen en la base de datos
+      const nonExistingRecords = await this.filterNonExistingRecords(records);
 
-      // Crear un Set para búsquedas rápidas
-      const existingSet = new Set(
-        existingRecords.map((r) => `${r.userId}-${r.timestamp.toISOString()}-${r.recordType}`)
-      );
+      if (nonExistingRecords.length === 0) {
+        console.info(`Todos los registros desde ${this.options.sourceName} ya existen en la base de datos`);
+        return {
+          success: true,
+          message: `Se procesaron ${totalRecords} registros desde ${this.options.sourceName}, pero todos ya existían`,
+          count: 0,
+          totalProcessed: totalRecords,
+          fileId: this.options.fileId,
+        };
+      }
+
+      // Crear un Set para evitar duplicados durante el procesamiento
+      const processedKeys = new Set<string>();
 
       // Procesar en lotes
       const batchSize = this.options.batchSize!;
-      for (let i = 0; i < records.length; i += batchSize) {
-        const batch = records.slice(i, i + batchSize);
+      for (let i = 0; i < nonExistingRecords.length; i += batchSize) {
+        const batch = nonExistingRecords.slice(i, i + batchSize);
 
-        // Filtrar duplicados
+        // Filtrar duplicados dentro del lote actual
         const uniqueRecords = batch.filter((record) => {
-          const key = `${record.userId}-${record.timestamp.toISOString()}-${record.recordType}`;
-          return !existingSet.has(key);
+          const key = generateRecordKey(record);
+          if (processedKeys.has(key)) {
+            return false;
+          }
+          processedKeys.add(key);
+          return true;
         });
 
         // Insertar en lote si hay registros únicos
@@ -82,26 +95,16 @@ export class GlucoseRecordProcessor {
           try {
             await db.insert(csvRecords).values(uniqueRecords);
             insertedCount += uniqueRecords.length;
-
-            // Agregar los nuevos registros al conjunto de existentes para evitar duplicados en lotes futuros
-            for (const record of uniqueRecords) {
-              const key = `${record.userId}-${record.timestamp.toISOString()}-${record.recordType}`;
-              existingSet.add(key);
-            }
           } catch (error) {
-            // Manejar errores de duplicados
+            // Manejar errores de duplicados como fallback
             if (this.isDuplicateKeyError(error)) {
-              console.warn("Se detectaron registros duplicados, procesando individualmente...");
+              console.warn("Se detectaron registros duplicados inesperados, procesando individualmente...");
 
               // Procesar los registros uno por uno para evitar que un duplicado detenga el lote completo
               for (const record of uniqueRecords) {
                 try {
                   await db.insert(csvRecords).values([record]);
                   insertedCount++;
-
-                  // Agregar el registro al conjunto de existentes
-                  const key = `${record.userId}-${record.timestamp.toISOString()}-${record.recordType}`;
-                  existingSet.add(key);
                 } catch (insertError) {
                   // Ignorar errores de duplicados individuales
                   if (!this.isDuplicateKeyError(insertError)) {
@@ -118,7 +121,7 @@ export class GlucoseRecordProcessor {
 
         // Actualizar progreso
         processedCount += batch.length;
-        const progress = Math.round((processedCount / totalRecords) * 100);
+        const progress = Math.round((processedCount / nonExistingRecords.length) * 100);
         this.reportProgress(progress, processedCount, totalRecords);
       }
 
@@ -142,6 +145,41 @@ export class GlucoseRecordProcessor {
         ? error
         : new Error(`Error desconocido al procesar datos desde ${this.options.sourceName}`);
     }
+  }
+
+  /**
+   * Filtra los registros que ya existen en la base de datos
+   */
+  private async filterNonExistingRecords(records: NewCsvRecord[]): Promise<NewCsvRecord[]> {
+    if (records.length === 0) return records;
+
+    // Crear un mapa de claves de los registros de entrada
+    const recordKeys = records.map(record => generateRecordKey(record));
+
+    const existingRecords = await db
+      .select({
+        userId: csvRecords.userId,
+        timestamp: csvRecords.timestamp,
+        recordType: csvRecords.recordType,
+      })
+      .from(csvRecords)
+      .where(eq(csvRecords.userId, this.userId));
+
+    // Crear un Set de claves existentes para búsquedas rápidas
+    const existingKeys = new Set(
+      existingRecords
+        .filter(r => {
+          const key = generateRecordKey(r);
+          return recordKeys.includes(key);
+        })
+        .map(r => generateRecordKey(r))
+    );
+
+    // Filtrar registros que no existen
+    return records.filter(record => {
+      const key = generateRecordKey(record);
+      return !existingKeys.has(key);
+    });
   }
 
   /**

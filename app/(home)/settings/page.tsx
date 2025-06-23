@@ -1,6 +1,5 @@
 "use client";
 
-import { LibreViewSync } from "@/components/libreview-sync";
 import { PatientSettings } from "@/components/patient-settings";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -23,10 +22,6 @@ export default function SettingsPage() {
 
         <TabsContent value="preferences">
           <PatientSettings />
-        </TabsContent>
-
-        <TabsContent value="api">
-          <LibreViewSync />
         </TabsContent>
       </Tabs>
     </div>

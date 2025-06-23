@@ -52,15 +52,16 @@ export function calculateVariability(readings: CsvRecord[]): number {
 /**
  * Genera un texto con las lecturas recientes de glucosa
  */
-export function generateRecentReadingsText(readings: CsvRecord[]): string {
+export function generateRecentReadingsText(readings: CsvRecord[], limit: number = 10): string {
   if (readings.length === 0) return "No hay datos de glucosa disponibles.";
 
   const recentReadings = readings
-    .slice(-10)
+    .slice(-limit)
     .map(
       (r) =>
         `${r.timestamp ? new Date(r.timestamp).toLocaleString() : "Fecha no disponible"}: ${r.glucose} mg/dL`
     )
+    .reverse()
     .join("\n");
 
   return `Últimas 10 lecturas de glucosa:\n${recentReadings}`;
@@ -75,22 +76,22 @@ export function generateMetricsText(metrics: GlucoseMetrics, timePeriod?: TimePe
   let periodText = "";
   if (timePeriod) {
     switch (timePeriod) {
-      case 'day':
+      case "day":
         periodText = "del último día";
         break;
-      case '7days':
+      case "7days":
         periodText = "de los últimos 7 días";
         break;
-      case '14days':
+      case "14days":
         periodText = "de los últimos 14 días";
         break;
-      case '30days':
+      case "30days":
         periodText = "de los últimos 30 días";
         break;
-      case '90days':
+      case "90days":
         periodText = "de los últimos 90 días";
         break;
-      case 'all':
+      case "all":
         periodText = "de todo el período";
         break;
     }

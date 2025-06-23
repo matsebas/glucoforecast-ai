@@ -1,6 +1,16 @@
 "use client";
 
-import { BarChart3, Bot, DropletIcon, FileUp, LogOut, Moon, Settings, Sun } from "lucide-react";
+import {
+  BarChart3,
+  Bot,
+  CloudCheckIcon,
+  DropletIcon,
+  FileUp,
+  LogOut,
+  Moon,
+  Settings,
+  Sun,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
@@ -51,24 +61,32 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/dashboard/ai")}>
-              <Link href="/dashboard/ai">
+            <SidebarMenuButton asChild isActive={isActive("/ai")}>
+              <Link href="/ai">
                 <Bot className="size-5" />
                 <span>Asistente IA</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/dashboard/upload")}>
-              <Link href="/dashboard/upload">
+            <SidebarMenuButton asChild isActive={isActive("/csv-upload")}>
+              <Link href="/csv-upload">
                 <FileUp className="size-5" />
                 <span>Subir CSV</span>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <SidebarMenuButton asChild isActive={isActive("/dashboard/settings")}>
-              <Link href="/dashboard/settings">
+            <SidebarMenuButton asChild isActive={isActive("/libre-view-api")}>
+              <Link href="/libre-view-api">
+                <CloudCheckIcon className="size-5" />
+                <span>LibreView API</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton asChild isActive={isActive("/settings")}>
+              <Link href="/settings">
                 <Settings className="size-5" />
                 <span>Configuración</span>
               </Link>
@@ -86,7 +104,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {theme === "dark" ? <Moon className="size-4" /> : <Sun className="size-4" />}
           <span>{theme === "dark" ? "Modo oscuro" : "Modo claro"}</span>
         </Toggle>
-        <Button variant="outline" onClick={() => signOut({ callbackUrl: "/login" })}>
+        <Button variant="outline" onClick={() => signOut({ redirect: true, redirectTo: "/login" })}>
           <LogOut className="mr-2 size-4" />
           Cerrar sesión
         </Button>

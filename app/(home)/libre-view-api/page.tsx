@@ -5,14 +5,7 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
@@ -24,7 +17,7 @@ interface LibreViewSyncFormValues {
   days: string;
 }
 
-export function LibreViewSync() {
+export default function LibreViewApiPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -81,49 +74,50 @@ export function LibreViewSync() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Sincronizar con LibreView</CardTitle>
-        <CardDescription>
-          Conecta tu cuenta de LibreView para importar automáticamente tus lecturas de glucosa.
-        </CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <CardContent className="space-y-6">
-          <div className="space-y-4">
-            <Label htmlFor="email">Email de LibreView</Label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="tu.email@ejemplo.com"
-              {...register("email", { required: "El email es obligatorio" })}
-            />
-            {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
-          </div>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">LibreView API</h1>
+        <p className="text-muted-foreground">Permite sincronizar tus datos con LibreView</p>
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="password">Contraseña de LibreView</Label>
-            <PasswordInput
-              id="password"
-              {...register("password", { required: "La contraseña es obligatoria" })}
-            />
-            {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
-          </div>
+      <Card className="max-w-2xl">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <CardContent className="space-y-6">
+            <div className="space-y-4">
+              <Label htmlFor="email">Email de LibreView</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="tu.email@ejemplo.com"
+                {...register("email", { required: "El email es obligatorio" })}
+              />
+              {errors.email && <p className="text-sm text-red-500">{errors.email.message}</p>}
+            </div>
 
-          <div className="text-sm text-muted-foreground">
-            <p>
-              Tus credenciales se utilizan únicamente para conectar con LibreView y no se almacenan
-              en nuestros servidores.
-            </p>
-          </div>
-          <Separator />
-        </CardContent>
-        <CardFooter className="pt-6">
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? "Sincronizando..." : "Sincronizar datos"}
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+            <div className="space-y-2">
+              <Label htmlFor="password">Contraseña de LibreView</Label>
+              <PasswordInput
+                id="password"
+                {...register("password", { required: "La contraseña es obligatoria" })}
+              />
+              {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
+            </div>
+
+            <div className="text-sm text-muted-foreground">
+              <p>
+                Tus credenciales se utilizan únicamente para conectar con LibreView y no se
+                almacenan en nuestros servidores.
+              </p>
+            </div>
+            <Separator />
+          </CardContent>
+          <CardFooter className="pt-6">
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Sincronizando..." : "Sincronizar datos"}
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+    </div>
   );
 }

@@ -89,7 +89,7 @@ export default function DashboardPage() {
 
       if (result90days.readings && result90days.readings.length > 0) {
         // Obtener la lectura más reciente
-        const latestReading = result90days.readings[result90days.readings.length - 1];
+        const latestReading = result90days.readings.slice(-1)[0];
 
         setData((prev) => ({
           ...prev,
@@ -104,7 +104,7 @@ export default function DashboardPage() {
           lastUpdate: latestReading.timestamp,
           has90daysData: true,
           isConnected: false,
-          readings: result90days.readings,
+          readings: resultDay.readings,
         }));
       } else {
         setData((prev) => ({
@@ -291,7 +291,6 @@ export default function DashboardPage() {
           </Card>
         </div>
       </>
-      {/*)}*/}
     </div>
   );
 }

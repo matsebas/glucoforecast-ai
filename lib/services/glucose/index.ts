@@ -1,4 +1,4 @@
-import { and, desc, eq, gt, gte, lte, or } from "drizzle-orm";
+import { and, asc, eq, gt, gte, lte, or } from "drizzle-orm";
 
 import { db } from "@/lib/db";
 import { csvRecords, glucoseMetrics } from "@/lib/db/schema";
@@ -152,15 +152,14 @@ function generateGlucoseAnalysis(readings: CsvRecord[], timePeriod: TimePeriod):
  */
 export async function getUserMultiPeriodGlucoseAnalysis(
   userId: string,
-  periods: TimePeriod[] = ["all"],
-  forceRecalculate: boolean = false
+  periods: TimePeriod[] = ["all"]
 ): Promise<MultiPeriodGlucoseAnalysis> {
   try {
     const result: MultiPeriodGlucoseAnalysis = {};
 
     for (const period of periods) {
       console.debug(">> GLUCOSE: Calculando análisis de glucosa para período:", period);
-      result[period] = await getUserGlucoseAnalysis(userId, period, forceRecalculate);
+      result[period] = await getUserGlucoseAnalysis(userId, period, true);
     }
 
     return result;
@@ -202,7 +201,7 @@ export async function getUserGlucoseAnalysis(
               gt(csvRecords.glucose, 0)
             )
           )
-          .orderBy(desc(csvRecords.timestamp))
+          .orderBy(asc(csvRecords.timestamp))
           .limit(10);
 
         // Crear objeto de métricas a partir de los datos almacenados
@@ -246,7 +245,7 @@ export async function getUserGlucoseAnalysis(
           toDate ? lte(csvRecords.timestamp, toDate) : undefined
         )
       )
-      .orderBy(desc(csvRecords.timestamp));
+      .orderBy(asc(csvRecords.timestamp));
 
     // Si no hay lecturas, devolver valores por defecto
     if (csvReadings.length === 0) {

@@ -1,16 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/auth";
-import { syncLibreLinkData } from "@/lib/services/libreview/api";
+import { LibreLinkService } from "@/lib/services/libreview/api";
 
 /**
  * POST /api/libreview
- * Sincroniza datos de glucosa desde LibreView
+ * Autentica con LibreView y devuelve información del usuario
  *
  * Body:
  * - email: Email del usuario en LibreView
  * - password: Contraseña del usuario en LibreView
- * - days: (opcional) Número de días de datos a obtener (por defecto 90)
  */
 export async function POST(req: NextRequest) {
   try {
@@ -34,16 +33,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Sincronizar datos de LibreView
-    const result = await syncLibreLinkData(userId, email, password);
+    // Autenticar con LibreView
+    const service = new LibreLinkService(userId);
+    const userData = await service.authenticate(email, password);
 
-    return NextResponse.json(result);
+    return NextResponse.json({
+      success: true,
+      data: userData,
+    });
   } catch (error) {
-    console.error("Error al sincronizar datos de LibreView:", error);
+    console.error("Error al autenticar con LibreView:", error);
 
     return NextResponse.json(
       {
-        error: "Error al sincronizar datos de LibreView",
+        error: "Error al autenticar con LibreView",
         message: error instanceof Error ? error.message : "Error desconocido",
       },
       { status: 500 }

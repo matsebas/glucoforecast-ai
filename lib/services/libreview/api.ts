@@ -21,16 +21,25 @@ export class LibreLinkService {
    * Inicializa y autentica el cliente de LibreLink
    * @param email Email del usuario en LibreLink
    * @param password Contraseña del usuario en LibreLink
+   * @param patientConnection Conexión del paciente (opcional)
    * @returns LibreUserData si la autenticación fue exitosa
    */
-  async authenticate(email: string, password: string): Promise<LibreUserData> {
+  async authenticate(
+    email: string,
+    password: string,
+    patientConnection?: LibreConnection
+  ): Promise<LibreUserData> {
     if (!email || !password) {
       return Promise.reject(new Error("Email y contraseña son obligatorios"));
     }
 
     try {
       // Inicializar el cliente
-      this.client = new LibreLinkClient({ email, password });
+      this.client = new LibreLinkClient({
+        email,
+        password,
+        patientId: patientConnection?.patientId,
+      });
 
       // Intentar login
       const response = await this.client.login();
@@ -91,73 +100,34 @@ export class LibreLinkService {
       );
     }
 
-    try {
-      if (!patientConnection) {
-        return {
-          success: false,
-          message: "No se pudo obtener la conexión del paciente de LibreLink",
-        };
-      }
+    const glucoseReadings = await this.client.history();
 
-      const glucoseReadings = await this.client.history();
-
-      if (!glucoseReadings || !glucoseReadings.length) {
-        return {
-          success: false,
-          message: "No se encontraron datos de glucosa en LibreLink",
-        };
-      }
-
-      const { records, errors } = parseGlucoseReadings(
-        glucoseReadings,
-        this.userId,
-        patientConnection
-      );
-
-      // Log errores de parsing si existen
-      if (errors.length > 0) {
-        console.warn(
-          `Errores de parsing en API LibreLink: ${errors.length} registros fallaron`,
-          errors
-        );
-      }
-
-      // Usar el procesador centralizado
-      const processor = new GlucoseRecordProcessor(this.userId, {
-        sourceName: "LibreLink API",
-      });
-
-      return await processor.processAndStore(records);
-    } catch (error) {
-      console.error("Error al obtener datos de LibreLink:", error);
-      throw error instanceof Error
-        ? error
-        : new Error("Error desconocido al obtener datos de LibreLink");
+    if (!glucoseReadings || !glucoseReadings.length) {
+      return {
+        success: false,
+        message: "No se encontraron datos de glucosa en LibreLink",
+      };
     }
+
+    const { records, errors } = parseGlucoseReadings(
+      glucoseReadings,
+      this.userId,
+      patientConnection
+    );
+
+    // Log errores de parsing si existen
+    if (errors.length > 0) {
+      console.warn(
+        `Errores de parsing en API LibreLink: ${errors.length} registros fallaron`,
+        errors
+      );
+    }
+
+    // Usar el procesador centralizado
+    const processor = new GlucoseRecordProcessor(this.userId, {
+      sourceName: "LibreLink API",
+    });
+
+    return await processor.processAndStore(records);
   }
-}
-
-/**
- * Función para sincronizar datos de LibreLink para un usuario
- * @param userId ID del usuario
- * @param email Email del usuario en LibreLink
- * @param password Contraseña del usuario en LibreLink
- * @returns Respuesta con información sobre el proceso
- */
-export async function syncLibreLinkData(
-  userId: string,
-  email: string,
-  password: string
-): Promise<UploadResponse> {
-  const service = new LibreLinkService(userId);
-
-  const authenticated = await service.authenticate(email, password);
-  if (!authenticated) {
-    return {
-      success: false,
-      message: "No se pudo autenticar con LibreLink. Verifique sus credenciales.",
-    };
-  }
-
-  return await service.fetchAndStoreGlucoseData(authenticated.connections[0]); // Usar la primera conexión disponible
 }

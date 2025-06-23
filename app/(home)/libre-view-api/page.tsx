@@ -9,7 +9,13 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { LibreUserData } from "@/lib/types";
 
@@ -65,7 +71,7 @@ export default function LibreViewApiPage() {
         toast.success("Acceso exitoso", {
           description: `Bienvenido ${result.data.firstName} ${result.data.lastName}`,
         });
-        
+
         // Si solo hay una conexión, seleccionarla automáticamente
         if (result.data.connections.length === 1) {
           setSelectedPatientId(result.data.connections[0].patientId);
@@ -136,6 +142,7 @@ export default function LibreViewApiPage() {
       </div>
 
       <Card className="max-w-2xl">
+        p
         <CardHeader>
           <CardTitle>Conectar con LibreView</CardTitle>
         </CardHeader>
@@ -209,13 +216,10 @@ export default function LibreViewApiPage() {
             <Separator />
           </CardContent>
           <CardFooter className="pt-6 space-x-2">
-            <Button 
-              onClick={handleProcessPatient}
-              disabled={isProcessing || !selectedPatientId}
-            >
+            <Button onClick={handleProcessPatient} disabled={isProcessing || !selectedPatientId}>
               {isProcessing ? "Procesando..." : "Procesar"}
             </Button>
-            <Button 
+            <Button
               variant="outline"
               onClick={() => {
                 setUserData(null);

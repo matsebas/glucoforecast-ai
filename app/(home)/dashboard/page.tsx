@@ -34,7 +34,8 @@ export default function DashboardPage() {
     hasData: false,
     has90daysData: false,
     isConnected: false,
-    readings: [] as CsvRecord[],
+    readingsDay: [] as CsvRecord[],
+    readings90Day: [] as CsvRecord[],
     hasPatientSettings: false,
   });
   const [isLoading, setIsLoading] = useState(true);
@@ -104,7 +105,8 @@ export default function DashboardPage() {
           lastUpdate: latestReading.timestamp,
           has90daysData: true,
           isConnected: false,
-          readings: resultDay.readings,
+          readingsDay: resultDay.readings,
+          readings90Day: result["14days"]!.readings,
         }));
       } else {
         setData((prev) => ({
@@ -227,7 +229,7 @@ export default function DashboardPage() {
                     <CardDescription>Niveles de glucosa en las últimas 24 horas</CardDescription>
                   </CardHeader>
                   <CardContent className="h-[300px]">
-                    <GlucoseChart data={data.readings} />
+                    <GlucoseChart data={data.readingsDay} />
                   </CardContent>
                 </Card>
               </TabsContent>
@@ -238,7 +240,7 @@ export default function DashboardPage() {
                     <CardDescription>Variación de glucosa por hora del día</CardDescription>
                   </CardHeader>
                   <CardContent className="h-[300px]">
-                    <DailyPatternChart data={data.readings} />
+                    <DailyPatternChart data={data.readings90Day} />
                   </CardContent>
                 </Card>
               </TabsContent>

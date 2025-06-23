@@ -74,11 +74,38 @@ export function DailyPatternChart({ data = [] }: DailyPatternChartProps) {
         <XAxis dataKey="hour" fontSize={12} />
         <YAxis domain={[40, 250]} fontSize={12} />
         <ChartTooltip content={<ChartTooltipContent />} />
-        <ReferenceLine y={180} stroke="green" strokeDasharray="5 5" strokeWidth={1.5} />
-        <ReferenceLine y={70} stroke="green" strokeDasharray="5 5" strokeWidth={1.5} />
-        <Area type="monotone" dataKey="min" stackId="1" fillOpacity={0.1} name="Mínimo" />
-        <Area type="monotone" dataKey="max" stackId="1" fillOpacity={0.3} name="Máximo" />
-        <Area type="monotone" dataKey="avg" fillOpacity={0.5} name="Promedio" />
+        <ReferenceLine y={180} stroke="orange" strokeDasharray="5 10" strokeWidth={1.5} />
+        <ReferenceLine y={70} stroke="red" strokeDasharray="5 10" strokeWidth={1.5} />
+        <Area
+          type="monotone"
+          dataKey="max"
+          stackId="3"
+          name="Máximo"
+          fill="#9977ff"
+          fillOpacity={0.2}
+          stroke="#9977ff"
+          strokeOpacity={0.2}
+        />
+        <Area
+          type="monotone"
+          dataKey="avg"
+          stackId="2"
+          name="Promedio"
+          fill="#44ee44"
+          fillOpacity={0.2}
+          stroke="#44ee44"
+          strokeOpacity={0.2}
+        />
+        <Area
+          type="monotone"
+          dataKey="min"
+          stackId="1"
+          name="Mínimo"
+          fill="#aa5555"
+          fillOpacity={0.2}
+          stroke="#aa5555"
+          strokeOpacity={0.2}
+        />
       </AreaChart>
     </ChartContainer>
   );

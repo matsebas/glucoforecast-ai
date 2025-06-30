@@ -4,6 +4,20 @@ Asistente web para gestión inteligente de diabetes tipo 1, que integra datos de
 utiliza Inteligencia Artificial Generativa para generar reportes en lenguaje natural para apoyar a pacientes con DM1 en
 la autogestión de su condición.
 
+## 🌐 Demo online y pública
+
+Probá la aplicación directamente en: **[https://gluco-forecast-ai.vercel.app/](https://gluco-forecast-ai.vercel.app/)**
+
+### Acceso de prueba
+
+Podés explorar todas las funcionalidades sin necesidad de registrarte usando:
+
+- **Email**: `demo@soysiglo.21.edu.ar`
+- **Contraseña**: `SoySiglo21`
+
+Esta cuenta ya tiene datos de glucosa de muestra cargados y configuración completa para que puedas probar inmediatamente
+las funciones de análisis e IA haciendo preguntas.
+
 ## 🚀 Características principales
 
 - **Monitoreo Continuo de Glucosa (CGM)**: Análisis completo de datos de glucosa con métricas de tiempo en rango (TIR)
@@ -29,22 +43,22 @@ Antes de comenzar, asegurate de tener instalado:
 ### Herramientas necesarias
 
 1. **Node.js 18.x o superior**
-   - [Descargar Node.js](https://nodejs.org/en/download)
-   - Verificar instalación: `node --version`
+    - [Descargar Node.js](https://nodejs.org/en/download)
+    - Verificar instalación: `node --version`
 
 2. **pnpm 8.x o superior**
-   - [Guía de instalación de pnpm](https://pnpm.io/installation)
-   - Instalación rápida: `npm install -g pnpm`
-   - Verificar instalación: `pnpm --version`
+    - [Guía de instalación de pnpm](https://pnpm.io/installation)
+    - Instalación rápida: `npm install -g pnpm`
+    - Verificar instalación: `pnpm --version`
 
 3. **Docker y Docker Compose**
-   - **Windows**: [Docker Desktop para Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
-   - **macOS**: [Docker Desktop para Mac](https://docs.docker.com/desktop/setup/install/mac-install/)
-   - **Linux**: [Docker Desktop para Linux](https://docs.docker.com/desktop/setup/install/linux/)
-   - Verificar instalación: `docker --version` y `docker-compose --version`
+    - **Windows**: [Docker Desktop para Windows](https://docs.docker.com/desktop/setup/install/windows-install/)
+    - **macOS**: [Docker Desktop para Mac](https://docs.docker.com/desktop/setup/install/mac-install/)
+    - **Linux**: [Docker Desktop para Linux](https://docs.docker.com/desktop/setup/install/linux/)
+    - Verificar instalación: `docker --version` y `docker-compose --version`
 
 4. **Cuenta de Google AI Studio** (para API de Gemini)
-   - [Crear cuenta en Google AI Studio](https://aistudio.google.com/app/apikey)
+    - [Crear cuenta en Google AI Studio](https://aistudio.google.com/app/apikey)
 
 ## 🚀 Instalación y configuración local
 
@@ -153,13 +167,6 @@ USE_LOCAL_DB="true"
 # Para testing con datos de Vercel (comentar la línea anterior)
 # USE_LOCAL_DB="true"
 ```
-
-## 🎮 Cuenta de demostración
-
-Para probar la plataforma sin necesidad de registrarte:
-
-- **Email**: `demo@soysiglo.21.edu.ar`
-- **Contraseña**: `Final2025!`
 
 ## 📊 Datos de prueba
 

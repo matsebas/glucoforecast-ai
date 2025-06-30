@@ -28,6 +28,8 @@ pnpm lint:fix           # Fix ESLint issues automatically
 # Database Operations
 pnpm db:generate        # Generate Drizzle migrations
 pnpm db:migrate         # Apply migrations to database
+pnpm db:pull            # Pull schema from database
+pnpm db:push            # Push schema to database (use with caution)
 ```
 
 ## Architecture
@@ -99,11 +101,24 @@ Core entities in `lib/db/schema.ts`:
 - `lib/validations/` - Zod schemas for data validation
 - `components/ui/` - Reusable UI components (shadcn/ui based)
 
+### Data Flow Architecture
+
+**CSV Record Processing**:
+- Unique constraint on `userId`, `timestamp`, and `recordType` prevents duplicates
+- Records are parsed using strategy pattern for different CSV formats
+- Progress tracking via Server-Sent Events during batch imports
+
+**Metrics Calculation**:
+- `glucoseMetrics` table stores pre-calculated TIR metrics by time period
+- Unique constraint on `userId` and `timePeriod` for efficient upserts
+- Metrics are recalculated when new data is imported
+
 ### Development Notes
 
 **Language**: Code comments should be in Spanish as this is a Spanish-language medical application.
 
 **Database Migrations**: Always run `pnpm db:generate` after schema changes, then `pnpm db:migrate` to apply.
 
-**Environment**: Uses `.env.local` for local development. Database operations require `DATABASE_URL` environment
-variable.
+**Environment**: Uses `.env.local` for local development. Database operations require `DATABASE_URL` environment variable.
+
+**Testing**: No test framework currently configured. Manual testing via development server.

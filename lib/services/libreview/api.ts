@@ -41,6 +41,12 @@ export class LibreLinkService {
         patientId: patientConnection?.patientId,
       });
 
+      console.info(
+        "Cliente de LibreLink inicializado:",
+        email,
+        patientConnection?.patientId || "SIN conexión específica"
+      );
+
       // Intentar login
       const response = await this.client.login();
 

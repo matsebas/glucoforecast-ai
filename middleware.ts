@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
     request.cookies.get("__Secure-next-auth.session-token");
 
   // Si tiene cookie de sesión pero no token, podría ser un problema de decodificación
-  // Aún así, consideramos al usuario como autenticado
+  // Aún así, se considera al usuario como autenticado
   const isAuthenticated = !!token || !!sessionCookie;
 
   // Redirigir a login si no está autenticado y la ruta no es pública

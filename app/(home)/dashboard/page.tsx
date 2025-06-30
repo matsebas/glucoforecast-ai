@@ -216,16 +216,16 @@ export default function DashboardPage() {
 
         <div className="grid gap-4 md:grid-cols-3">
           <div className="md:col-span-2">
-            <Tabs defaultValue="overview" className="space-y-4">
+            <Tabs defaultValue="patterns" className="space-y-4">
               <TabsList>
-                <TabsTrigger value="overview">Vista General</TabsTrigger>
-                <TabsTrigger value="daily">Patrones Diarios</TabsTrigger>
-                <TabsTrigger value="analysis">Análisis</TabsTrigger>
+                <TabsTrigger value="patterns">Patrones por horario</TabsTrigger>
+                <TabsTrigger value="overview">Tendencia del día</TabsTrigger>
+                {/*<TabsTrigger value="analysis">Análisis</TabsTrigger>*/}
               </TabsList>
               <TabsContent value="overview" className="space-y-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Tendencia de Glucosa</CardTitle>
+                    <CardTitle>Tendencia del día</CardTitle>
                     <CardDescription>Niveles de glucosa en las últimas 24 horas</CardDescription>
                   </CardHeader>
                   <CardContent className="h-[300px]">
@@ -233,11 +233,11 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent value="daily" className="space-y-4">
+              <TabsContent value="patterns" className="space-y-4">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Patrones Diarios</CardTitle>
-                    <CardDescription>Variación de glucosa por hora del día</CardDescription>
+                    <CardTitle>Patrones por horario</CardTitle>
+                    <CardDescription>Variación de glucosa según la hora del día</CardDescription>
                   </CardHeader>
                   <CardContent className="h-[300px]">
                     <DailyPatternChart data={data.readings90Day} />
@@ -284,7 +284,7 @@ export default function DashboardPage() {
                 <p className="text-sm">¿Cómo puedo reducir mi variabilidad glucémica?</p>
               </div>
               <Button asChild className="w-full">
-                <Link href="/dashboard/ai">
+                <Link href="/ai">
                   <Bot className="mr-2 size-4" />
                   Abrir Asistente IA
                 </Link>

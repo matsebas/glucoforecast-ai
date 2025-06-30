@@ -1,1 +1,0 @@
-ALTER TABLE "uploaded_files" DROP COLUMN "filename";

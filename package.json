@@ -9,7 +9,9 @@
     "lint": "next lint",
     "lint:fix": "next lint --fix",
     "db:generate": "dotenv -e .env.local -- npx drizzle-kit generate --config=drizzle.config.ts",
-    "db:migrate": "dotenv -e .env.local -- npx drizzle-kit migrate --config=drizzle.config.ts"
+    "db:migrate": "dotenv -e .env.local -- npx drizzle-kit migrate --config=drizzle.config.ts",
+    "db:pull": "dotenv -e .env.local -- npx drizzle-kit pull --config=drizzle.config.ts",
+    "db:push": "dotenv -e .env.local -- npx drizzle-kit push --config=drizzle.config.ts"
   },
   "dependencies": {
     "@ai-sdk/google": "^1.2.17",
@@ -67,6 +69,7 @@
     "next-auth": "5.0.0-beta.28",
     "next-themes": "^0.4.6",
     "pg": "latest",
+    "postgres": "^3.4.7",
     "react": "^19.1.0",
     "react-day-picker": "8.10.1",
     "react-dom": "^19.1.0",

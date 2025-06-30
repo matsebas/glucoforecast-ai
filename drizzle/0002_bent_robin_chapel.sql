@@ -1,1 +1,0 @@
-ALTER TABLE "uploaded_files" ALTER COLUMN "mime_type" SET NOT NULL;

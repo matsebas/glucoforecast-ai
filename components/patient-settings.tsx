@@ -58,7 +58,18 @@ export function PatientSettings() {
         const response = await fetch("/api/patient-settings");
 
         if (!response.ok) {
-          throw new Error("Error al cargar la configuración");
+          const errorData = await response.json();
+
+          // Manejar específicamente cuando no hay datos configurados
+          if (errorData.error === "PATIENT_SETTINGS_NOT_CONFIGURED") {
+            toast.warning("Configuración inicial", {
+              description:
+                "No hay parámetros configurados. Complete la configuración para usar las funciones de la IA.",
+            });
+            return; // No lanzar error, usar valores por defecto
+          }
+
+          throw new Error(errorData.message || "Error al cargar la configuración");
         }
 
         const data = await response.json();
@@ -137,7 +148,7 @@ export function PatientSettings() {
               <span className="text-sm text-muted-foreground">mg/dL por unidad</span>
             </div>
             {errors.isf && <p className="text-sm text-destructive">{errors.isf.message}</p>}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground italic">
               Cuánto bajará su nivel de glucosa en sangre por cada unidad de insulina
             </p>
           </div>
@@ -158,7 +169,7 @@ export function PatientSettings() {
               <span className="text-sm text-muted-foreground">g/unidad</span>
             </div>
             {errors.icr && <p className="text-sm text-destructive">{errors.icr.message}</p>}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground italic">
               Cuántos gramos de carbohidratos cubre 1 unidad de insulina
             </p>
           </div>
@@ -192,7 +203,7 @@ export function PatientSettings() {
                 {errors.targetLow?.message || errors.targetHigh?.message}
               </p>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground italic">
               El intervalo deseado para sus niveles de glucosa en sangre
             </p>
           </div>
@@ -206,7 +217,7 @@ export function PatientSettings() {
               onValueChange={(value) => setValue("penIncrement", parseFloat(value))}
               disabled={isLoading}
             >
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="w-36">
                 <SelectValue placeholder="Seleccionar" />
               </SelectTrigger>
               <SelectContent>
@@ -217,7 +228,7 @@ export function PatientSettings() {
             {errors.penIncrement && (
               <p className="text-sm text-destructive">{errors.penIncrement.message}</p>
             )}
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground italic">
               El incremento mínimo que permite su lapicera de insulina
             </p>
           </div>

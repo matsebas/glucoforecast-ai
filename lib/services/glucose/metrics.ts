@@ -64,7 +64,7 @@ export function generateRecentReadingsText(readings: CsvRecord[], limit: number 
     .reverse()
     .join("\n");
 
-  return `Últimas 10 lecturas de glucosa:\n${recentReadings}`;
+  return `Últimas ${limit} lecturas de glucosa:\n${recentReadings}`;
 }
 
 /**

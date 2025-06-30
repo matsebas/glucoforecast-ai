@@ -135,7 +135,7 @@ function generateGlucoseAnalysis(readings: CsvRecord[], timePeriod: TimePeriod):
   };
 
   // Generar textos para la interfaz y el prompt
-  const recentReadingsText = generateRecentReadingsText(readings);
+  const recentReadingsText = generateRecentReadingsText(readings, 50);
   const metricsText = generateMetricsText(metrics, timePeriod);
 
   return {

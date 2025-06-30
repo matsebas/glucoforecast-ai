@@ -18,9 +18,9 @@ export const patientSettingsSchema = object({
     .min(120, "El valor debe ser mayor o igual que 120")
     .max(200, "El valor debe ser menor o igual que 200"),
   penIncrement: number({ required_error: "El incremento de la lapicera es requerido" })
-    .refine((val) => val === 0.5 || val === 1, {
-      message: "El incremento debe ser 0.5 o 1",
-    }),
+    .multipleOf(0.5, "El incremento debe ser múltiplo de 0.5")
+    .min(0.5, "El incremento mínimo es 0.5")
+    .max(1, "El incremento máximo es 1"),
 }).refine((data) => data.targetHigh > data.targetLow, {
   message: "El límite superior debe ser mayor que el límite inferior",
   path: ["targetHigh"],

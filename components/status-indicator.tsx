@@ -1,15 +1,15 @@
 import {
   DatabaseBackup,
   DatabaseZap,
+  RouteOffIcon,
   ServerOffIcon as DatabaseOff,
   Settings2Icon,
-  RouteOffIcon,
   Wifi,
   WifiOff,
 } from "lucide-react";
+import Link from "next/link";
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import Link from "next/link";
 
 interface StatusIndicatorProps {
   isConnected: boolean;
@@ -18,7 +18,12 @@ interface StatusIndicatorProps {
   hasPatientSettings: boolean;
 }
 
-export function StatusIndicator({ isConnected, hasData, has90DaysData, hasPatientSettings }: StatusIndicatorProps) {
+export function StatusIndicator({
+  isConnected,
+  hasData,
+  has90DaysData,
+  hasPatientSettings,
+}: StatusIndicatorProps) {
   return (
     <div className="flex items-center gap-2">
       <TooltipProvider>
@@ -84,7 +89,7 @@ export function StatusIndicator({ isConnected, hasData, has90DaysData, hasPatien
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Link href="/dashboard/settings">
+            <Link href="/settings">
               <div className="flex items-center gap-1 rounded-full bg-muted px-2 py-1 hover:bg-muted/80 transition-colors cursor-pointer">
                 {hasPatientSettings ? (
                   <Settings2Icon className="size-4 text-green-500" />

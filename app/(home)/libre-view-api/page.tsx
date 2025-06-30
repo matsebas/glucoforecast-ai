@@ -97,6 +97,10 @@ export default function LibreViewApiPage() {
     setIsProcessing(true);
 
     try {
+      console.info("Procesando datos de paciente:", {
+        email: credentials.email,
+        patientId: selectedPatientId,
+      });
       const response = await fetch("/api/libreview/process", {
         method: "POST",
         headers: {
@@ -142,7 +146,6 @@ export default function LibreViewApiPage() {
       </div>
 
       <Card className="max-w-2xl">
-        p
         <CardHeader>
           <CardTitle>Conectar con LibreView</CardTitle>
         </CardHeader>

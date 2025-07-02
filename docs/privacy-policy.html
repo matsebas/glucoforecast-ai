@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Política de Privacidad - GlucoForecast AI</title>
+    <script>
+        // Theme script must run before body loads to prevent flash
+        (function () {
+            function getThemePreference() {
+                const stored = localStorage.getItem('theme');
+                if (stored) return stored;
+                return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+
+            function setTheme(theme) {
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                localStorage.setItem('theme', theme);
+            }
+
+            setTheme(getThemePreference());
+        })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        border: "hsl(var(--border))",
+                        input: "hsl(var(--input))",
+                        ring: "hsl(var(--ring))",
+                        background: "hsl(var(--background))",
+                        foreground: "hsl(var(--foreground))",
+                        primary: {
+                            DEFAULT: "hsl(var(--primary))",
+                            foreground: "hsl(var(--primary-foreground))"
+                        },
+                        secondary: {
+                            DEFAULT: "hsl(var(--secondary))",
+                            foreground: "hsl(var(--secondary-foreground))"
+                        },
+                        destructive: {
+                            DEFAULT: "hsl(var(--destructive))",
+                            foreground: "hsl(var(--destructive-foreground))"
+                        },
+                        muted: {
+                            DEFAULT: "hsl(var(--muted))",
+                            foreground: "hsl(var(--muted-foreground))"
+                        },
+                        accent: {
+                            DEFAULT: "hsl(var(--accent))",
+                            foreground: "hsl(var(--accent-foreground))"
+                        },
+                        popover: {
+                            DEFAULT: "hsl(var(--popover))",
+                            foreground: "hsl(var(--popover-foreground))"
+                        },
+                        card: {
+                            DEFAULT: "hsl(var(--card))",
+                            foreground: "hsl(var(--card-foreground))"
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background: 0 0% 100%;
+            --foreground: 222.2 84% 4.9%;
+            --card: 0 0% 100%;
+            --card-foreground: 222.2 84% 4.9%;
+            --popover: 0 0% 100%;
+            --popover-foreground: 222.2 84% 4.9%;
+            --primary: 199 89% 48%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96%;
+            --secondary-foreground: 222.2 84% 4.9%;
+            --muted: 210 40% 96%;
+            --muted-foreground: 215.4 16.3% 46.9%;
+            --accent: 210 40% 96%;
+            --accent-foreground: 222.2 84% 4.9%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 214.3 31.8% 91.4%;
+            --input: 214.3 31.8% 91.4%;
+            --ring: 199 89% 48%;
+        }
+
+        .dark {
+            --background: 222.2 84% 4.9%;
+            --foreground: 210 40% 98%;
+            --card: 222.2 84% 4.9%;
+            --card-foreground: 210 40% 98%;
+            --popover: 222.2 84% 4.9%;
+            --popover-foreground: 210 40% 98%;
+            --primary: 199 89% 48%;
+            --primary-foreground: 222.2 84% 4.9%;
+            --secondary: 217.2 32.6% 17.5%;
+            --secondary-foreground: 210 40% 98%;
+            --muted: 217.2 32.6% 17.5%;
+            --muted-foreground: 215 20.2% 65.1%;
+            --accent: 217.2 32.6% 17.5%;
+            --accent-foreground: 210 40% 98%;
+            --destructive: 0 62.8% 30.6%;
+            --destructive-foreground: 210 40% 98%;
+            --border: 217.2 32.6% 17.5%;
+            --input: 217.2 32.6% 17.5%;
+            --ring: 199 89% 48%;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: hsl(var(--background));
+            color: hsl(var(--foreground));
+        }
+
+        .card {
+            background-color: hsl(var(--card));
+            color: hsl(var(--card-foreground));
+            border: 1px solid hsl(var(--border));
+        }
+    </style>
+</head>
+<body class="bg-background text-foreground">
+
+<header class="bg-card/80 backdrop-blur-lg sticky top-0 z-50 border-b border-border">
+    <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+        <a href="index.html" class="font-bold text-xl text-primary hover:text-primary/80 transition-colors">GlucoForecast
+            AI</a>
+        <div class="hidden md:flex space-x-6 text-sm font-medium">
+            <a href="index.html#introduccion" class="hover:text-primary transition-colors">Introducción</a>
+            <a href="index.html#solucion" class="hover:text-primary transition-colors">La Solución</a>
+            <a href="index.html#metricas" class="hover:text-primary transition-colors">Métricas Clave</a>
+            <a href="index.html#conclusion" class="hover:text-primary transition-colors">Conclusión</a>
+            <a href="privacy-policy.html" class="text-primary font-semibold">Privacidad</a>
+        </div>
+        <div class="flex items-center space-x-4">
+            <!-- Theme Toggle -->
+            <button id="theme-toggle" class="p-2 rounded-md hover:bg-muted transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" id="theme-toggle-dark-icon" class="hidden w-5 h-5"
+                     viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" id="theme-toggle-light-icon" class="hidden w-5 h-5"
+                     viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2"/>
+                    <path d="M12 20v2"/>
+                    <path d="m4.93 4.93 1.41 1.41"/>
+                    <path d="m17.66 17.66 1.41 1.41"/>
+                    <path d="M2 12h2"/>
+                    <path d="M20 12h2"/>
+                    <path d="m6.34 17.66-1.41 1.41"/>
+                    <path d="m19.07 4.93-1.41 1.41"/>
+                </svg>
+            </button>
+            <a href="https://github.com/matsebas/glucoforecast-ai" target="_blank"
+               class="hidden md:inline-block bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-all">Ver
+                Código</a>
+            <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-muted">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+                </svg>
+            </button>
+        </div>
+    </nav>
+    <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 flex flex-col space-y-3">
+        <a href="index.html#introduccion" class="block hover:text-primary transition-colors">Introducción</a>
+        <a href="index.html#solucion" class="block hover:text-primary transition-colors">La Solución</a>
+        <a href="index.html#metricas" class="block hover:text-primary transition-colors">Métricas Clave</a>
+        <a href="index.html#conclusion" class="block hover:text-primary transition-colors">Conclusión</a>
+        <a href="privacy-policy.html" class="block text-primary font-semibold">Privacidad</a>
+        <a href="https://github.com/matsebas/glucoforecast-ai" target="_blank"
+           class="inline-block bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-semibold hover:bg-primary/90 transition-all w-full text-center mt-2">Ver
+            Código</a>
+    </div>
+</header>
+
+<main class="container mx-auto px-6 py-8 max-w-4xl">
+    <div class="mb-8">
+        <a href="index.html"
+           class="inline-flex items-center text-primary hover:text-primary/80 transition-colors text-sm font-medium">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Volver al inicio
+        </a>
+    </div>
+
+    <div class="card p-8 md:p-12 rounded-xl shadow-md">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold tracking-tight mb-4">Política de Privacidad de GlucoForecast
+                AI</h1>
+            <p class="text-muted-foreground">Fecha de última actualización: 2 de julio de 2025</p>
+        </header>
+
+        <div class="prose prose-slate dark:prose-invert max-w-none space-y-6">
+            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-6">
+                <div class="flex items-start space-x-3">
+                    <svg class="w-6 h-6 text-yellow-600 dark:text-yellow-400 mt-0.5 flex-shrink-0" fill="currentColor"
+                         viewBox="0 0 20 20">
+                        <path fill-rule="evenodd"
+                              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                              clip-rule="evenodd"></path>
+                    </svg>
+                    <div>
+                        <h3 class="font-semibold text-yellow-800 dark:text-yellow-200 mb-2">Aviso Importante</h3>
+                        <p class="text-yellow-700 dark:text-yellow-300 text-sm">
+                            <strong>GlucoForecast AI es un prototipo tecnológico funcional desarrollado en el marco de
+                                un Trabajo Final de Grado</strong> para la carrera de Licenciatura en Informática de la
+                            Universidad Siglo 21. Su propósito es demostrar la viabilidad de utilizar Inteligencia
+                            Artificial Generativa para asistir en la gestión de la Diabetes Mellitus tipo 1. <strong>No
+                            es un producto comercial ni un dispositivo médico certificado, y no debe ser utilizado para
+                            tomar decisiones reales de tratamiento médico.</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <section>
+                <p class="text-muted-foreground">
+                    La presente Política de Privacidad está dirigida a la protección y seguridad de los Datos Personales
+                    (en adelante, los "<strong>Datos</strong>") proporcionados por los usuarios que utilizan los
+                    servicios del proyecto académico <strong>GlucoForecast AI</strong> (en adelante, el "<strong>Proyecto</strong>"
+                    o "<strong>GlucoForecast AI</strong>").
+                </p>
+
+                <p class="text-muted-foreground">
+                    El Proyecto se ha desarrollado cumpliendo con los principios de la Ley Nº 25.326 de Protección de
+                    Datos Personales, su decreto reglamentario y normas complementarias (en adelante, la "<strong>Ley
+                    25.326</strong>").
+                </p>
+
+                <p class="text-muted-foreground">
+                    El simple acceso y utilización del sitio web del Proyecto, accesible en <a
+                        href="https://gluco-forecast-ai.vercel.app/" class="text-primary hover:underline"
+                        target="_blank">https://gluco-forecast-ai.vercel.app/</a>, implica la aceptación por parte del
+                    Usuario de todos los términos y condiciones de la presente Política de Privacidad.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold mb-4">1. Recolección de Datos</h2>
+                <p class="text-muted-foreground mb-4">
+                    El Usuario acepta que GlucoForecast AI puede recolectar información al momento de registrarse y
+                    autenticarse utilizando su Cuenta de Google. En virtud de la naturaleza del Proyecto, se tratarán
+                    las siguientes categorías de Datos:
+                </p>
+
+                <div class="space-y-4">
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-semibold mb-2">📧 Datos de Perfil de Google</h3>
+                        <p class="text-muted-foreground text-sm mb-2">Al autorizar el inicio de sesión con Google, el
+                            Usuario permite que el Proyecto acceda a:</p>
+                        <ul class="list-disc list-inside text-muted-foreground text-sm space-y-1">
+                            <li>Nombre y apellido</li>
+                            <li>Dirección de correo electrónico principal</li>
+                            <li>Foto de perfil (si está disponible)</li>
+                        </ul>
+                        <p class="text-sm mt-2 font-medium">
+                            <strong>GlucoForecast AI no solicita, recolecta ni almacena la contraseña de su Cuenta de
+                                Google en ningún momento.</strong>
+                        </p>
+                    </div>
+
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-semibold mb-2">🩺 Datos de Salud (Datos Sensibles)</h3>
+                        <ul class="list-disc list-inside text-muted-foreground text-sm space-y-2">
+                            <li><strong>Datos de Monitoreo Continuo de Glucosa (CGM):</strong> Archivos CSV exportados
+                                desde Abbott LibreView con mediciones de glucosa y marcas de tiempo
+                            </li>
+                            <li><strong>Datos de conexión con API (Experimental):</strong> Conexión experimental con la
+                                API de LibreLinkUp para sincronizar datos recientes
+                            </li>
+                            <li><strong>Parámetros de Configuración Personal:</strong> ISF, ICR, rangos objetivo de
+                                glucosa
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold mb-4">2. Uso y Finalidad del Tratamiento</h2>
+                <p class="text-muted-foreground mb-4">
+                    GlucoForecast AI utilizará la información con el único fin de cumplir los objetivos académicos del
+                    Proyecto:
+                </p>
+                <ul class="list-disc list-inside text-muted-foreground space-y-2">
+                    <li>Prestar el servicio principal del Proyecto usando IA Generativa (Google Gemini)</li>
+                    <li>Calcular y visualizar métricas clave como TIR, TBR, TAR</li>
+                    <li>Personalizar el análisis según parámetros del usuario</li>
+                    <li>Gestionar la autenticación segura</li>
+                    <li>Cumplir con requerimientos legales cuando sea solicitado</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold mb-4">3. Transferencia de Datos a Terceros</h2>
+                <p class="text-muted-foreground mb-4">
+                    Para cumplir con los fines establecidos, GlucoForecast AI comparte datos con proveedores
+                    tecnológicos esenciales:
+                </p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-semibold mb-2">☁️ Vercel</h3>
+                        <p class="text-muted-foreground text-sm">
+                            Proveedor de alojamiento, base de datos (Vercel Postgres) y almacenamiento de archivos
+                            (Vercel Blob). Necesario para el funcionamiento del Proyecto.
+                        </p>
+                    </div>
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-semibold mb-2">🧠 Google (API Gemini)</h3>
+                        <p class="text-muted-foreground text-sm">
+                            Para generar análisis inteligentes, los datos de CGM son enviados al modelo Google Gemini.
+                            <strong>El Usuario acepta que sus datos de salud serán procesados por Google para esta
+                                finalidad.</strong>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold mb-4">4. Seguridad de la Información</h2>
+                <div class="space-y-4">
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-semibold mb-2">🔐 Autenticación Segura</h3>
+                        <p class="text-muted-foreground text-sm">
+                            Acceso exclusivo a través de OAuth 2.0 de Google. El Proyecto no gestiona contraseñas.
+                        </p>
+                    </div>
+                    <div class="card p-4 rounded-lg">
+                        <h3 class="font-semibold mb-2">🛡️ Infraestructura</h3>
+                        <p class="text-muted-foreground text-sm">
+                            Infraestructura segura de Vercel con políticas de respaldo automáticas y cifradas.
+                        </p>
+                    </div>
+                </div>
+                <p class="text-muted-foreground text-sm mt-4">
+                    <strong>Limitación:</strong> Considerando que internet es un sistema abierto, el Proyecto no puede
+                    garantizar que terceros no autorizados no puedan eventualmente superar las medidas de seguridad.
+                </p>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold mb-4">5. Derechos de los Usuarios</h2>
+                <p class="text-muted-foreground mb-4">
+                    En cumplimiento de la Ley 25.326, el Usuario tiene derecho a:
+                </p>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="card p-4 rounded-lg text-center">
+                        <div class="text-2xl mb-2">👁️</div>
+                        <h3 class="font-semibold mb-1">Acceso</h3>
+                        <p class="text-muted-foreground text-sm">Obtener información sobre sus datos</p>
+                    </div>
+                    <div class="card p-4 rounded-lg text-center">
+                        <div class="text-2xl mb-2">✏️</div>
+                        <h3 class="font-semibold mb-1">Rectificación</h3>
+                        <p class="text-muted-foreground text-sm">Actualizar o corregir datos inexactos</p>
+                    </div>
+                    <div class="card p-4 rounded-lg text-center">
+                        <div class="text-2xl mb-2">🗑️</div>
+                        <h3 class="font-semibold mb-1">Supresión</h3>
+                        <p class="text-muted-foreground text-sm">Eliminar datos de la base</p>
+                    </div>
+                </div>
+                <div class="mt-4 p-4 bg-muted rounded-lg">
+                    <p class="text-sm">
+                        <strong>Contacto:</strong> Para ejercer estos derechos, envíe una solicitud a
+                        <a href="mailto:matisebastiao@gmail.com" class="text-primary hover:underline">matisebastiao@gmail.com</a>
+                        con el asunto "Protección de Datos Personales".
+                    </p>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold mb-4">6. Reclamos</h2>
+                <div class="card p-4 rounded-lg">
+                    <p class="text-muted-foreground text-sm mb-2">
+                        <strong>LA AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA</strong> es el Órgano de Control de la Ley
+                        N° 25.326.
+                    </p>
+                    <div class="text-sm space-y-1">
+                        <p><strong>Dirección:</strong> Av. Pte. Julio A. Roca 710, Piso 2º, Ciudad de Buenos Aires</p>
+                        <p><strong>Email:</strong> <a href="mailto:datospersonales@aaip.gob.ar"
+                                                      class="text-primary hover:underline">datospersonales@aaip.gob.ar</a>
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-bold mb-4">7. Modificaciones</h2>
+                <p class="text-muted-foreground">
+                    Los responsables del Proyecto podrán modificar esta Política de Privacidad en cualquier momento. Se
+                    notificará cualquier modificación a través de la publicación de la nueva versión en el sitio web del
+                    Proyecto.
+                </p>
+            </section>
+        </div>
+    </div>
+</main>
+
+<footer class="bg-muted border-t border-border mt-16">
+    <div class="container mx-auto px-6 py-6 text-center text-sm text-muted-foreground">
+        <p>&copy; 2025 Matias Sebastiao. Proyecto Académico para la Universidad Siglo 21.</p>
+        <p class="mt-2">Esta es una representación interactiva del proyecto. No es un dispositivo médico.</p>
+        <div class="mt-4 space-x-4">
+            <a href="index.html" class="text-primary hover:underline">Volver al inicio</a>
+            <a href="https://gluco-forecast-ai.vercel.app/" target="_blank" class="text-primary hover:underline">Demo
+                Online</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+        const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+        function updateThemeIcon() {
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggleDarkIcon.classList.add('hidden');
+                themeToggleLightIcon.classList.remove('hidden');
+            } else {
+                themeToggleDarkIcon.classList.remove('hidden');
+                themeToggleLightIcon.classList.add('hidden');
+            }
+        }
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+            updateThemeIcon();
+        }
+
+        themeToggle.addEventListener('click', toggleTheme);
+        updateThemeIcon();
+
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+    });
+</script>
+</body>
+</html>

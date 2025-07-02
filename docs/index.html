@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe Interactivo: GlucoForecast AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body class="text-slate-700">
+
+<header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+    <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+        <h1 class="font-bold text-xl text-sky-600">GlucoForecast AI</h1>
+        <div class="hidden md:flex space-x-6 text-sm font-medium">
+            <a href="#introduccion" class="hover:text-sky-600 transition-colors">Introducción</a>
+            <a href="#solucion" class="hover:text-sky-600 transition-colors">La Solución</a>
+            <a href="#metricas" class="hover:text-sky-600 transition-colors">Métricas Clave</a>
+            <a href="#conclusion" class="hover:text-sky-600 transition-colors">Conclusión</a>
+        </div>
+        <a href="https://github.com/matsebas/glucoforecast-ai" target="_blank"
+           class="hidden md:inline-block bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-sky-700 transition-all">Ver
+            Código</a>
+        <button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:bg-slate-100">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                 stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"/>
+            </svg>
+        </button>
+    </nav>
+    <div id="mobile-menu" class="hidden md:hidden px-6 pb-4 flex flex-col space-y-3">
+        <a href="#introduccion" class="block hover:text-sky-600 transition-colors">Introducción</a>
+        <a href="#solucion" class="block hover:text-sky-600 transition-colors">La Solución</a>
+        <a href="#metricas" class="block hover:text-sky-600 transition-colors">Métricas Clave</a>
+        <a href="#conclusion" class="block hover:text-sky-600 transition-colors">Conclusión</a>
+        <a href="https://github.com/matsebas/glucoforecast-ai" target="_blank"
+           class="inline-block bg-sky-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-sky-700 transition-all w-full text-center mt-2">Ver
+            Código</a>
+    </div>
+</header>
+
+<main class="container mx-auto px-6">
+    <section id="introduccion" class="py-16 md:py-24 text-center">
+        <h2 class="text-4xl md:text-5xl font-bold tracking-tight text-slate-800">GlucoForecast AI</h2>
+        <p class="mt-4 text-lg md:text-xl text-slate-600 max-w-3xl mx-auto">Un Asistente para la Gestión Inteligente de
+            Diabetes Tipo 1</p>
+        <p class="mt-2 text-sm text-slate-500">Trabajo Final de Grado de <span
+                class="font-semibold">Matias Sebastiao</span> para la Universidad Siglo 21</p>
+        <div class="mt-8 bg-white p-8 rounded-xl shadow-md border border-slate-200/80 max-w-4xl mx-auto">
+            <h3 class="font-semibold text-xl text-slate-800 mb-3">Resumen del Proyecto</h3>
+            <p class="text-left text-slate-600 leading-relaxed">
+                La gestión de la Diabetes Mellitus tipo 1 (DM1) genera un gran volumen de datos de Monitoreo Continuo de
+                Glucosa (CGM), cuya interpretación requiere un esfuerzo cognitivo considerable. Este proyecto aborda
+                dicha problemática a través del desarrollo de <span
+                    class="font-semibold text-sky-600">GlucoForecast AI</span>, un asistente inteligente que transforma
+                datos glucémicos complejos en información comprensible y accionable. Mediante un motor de Inteligencia
+                Artificial Generativa (Google Gemini), el sistema genera reportes y explicaciones en lenguaje natural,
+                facilitando la autogestión informada del paciente.
+            </p>
+        </div>
+    </section>
+
+    <section id="solucion" class="py-16 md:py-24">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-slate-800">La Solución: Arquitectura y
+                Flujo</h2>
+            <p class="mt-3 text-lg text-slate-600 max-w-3xl mx-auto">GlucoForecast AI se estructura sobre una
+                arquitectura moderna en la nube que garantiza seguridad, escalabilidad y una experiencia de usuario
+                fluida.</p>
+        </div>
+        <div class="bg-white p-8 rounded-xl shadow-md border border-slate-200/80">
+            <h3 class="font-semibold text-center text-xl text-slate-800 mb-8">Diagrama de Arquitectura Interactiva</h3>
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 text-sm">
+                <div class="text-center p-4 rounded-lg bg-slate-50 border w-full md:w-auto arch-component">
+                    <div class="text-4xl mb-2">👤</div>
+                    <div class="font-bold text-slate-800">Cliente</div>
+                    <div class="text-slate-500">Interfaz (Next.js, React)</div>
+                </div>
+                <div class="text-sky-500 font-bold text-2xl transform md:-rotate-0">&rarr;</div>
+                <div class="text-center p-4 rounded-lg bg-slate-50 border w-full md:w-auto arch-component">
+                    <div class="text-4xl mb-2">⚙️</div>
+                    <div class="font-bold text-slate-800">Servidor</div>
+                    <div class="text-slate-500">API REST (Next.js)</div>
+                </div>
+                <div class="text-sky-500 font-bold text-2xl transform md:-rotate-0">&rarr;</div>
+                <div class="flex flex-col gap-4">
+                    <div class="text-center p-4 rounded-lg bg-slate-50 border arch-component">
+                        <div class="text-4xl mb-2">🔐</div>
+                        <div class="font-bold text-slate-800">Autenticación</div>
+                        <div class="text-slate-500">Auth.js (Google)</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-slate-50 border arch-component">
+                        <div class="text-4xl mb-2">🗃️</div>
+                        <div class="font-bold text-slate-800">Base de Datos</div>
+                        <div class="text-slate-500">Vercel Postgres</div>
+                    </div>
+                    <div class="text-center p-4 rounded-lg bg-slate-50 border arch-component">
+                        <div class="text-4xl mb-2">🧠</div>
+                        <div class="font-bold text-slate-800">IA Generativa</div>
+                        <div class="text-slate-500">Vercel AI SDK (Gemini)</div>
+                    </div>
+                </div>
+            </div>
+            <p class="text-center mt-8 text-slate-500">Pase el cursor sobre los componentes para ver su rol. Esta
+                arquitectura modular permite que el sistema procese los datos de forma segura, se conecte con la IA para
+                generar análisis y los presente de vuelta al usuario en una interfaz clara.</p>
+        </div>
+    </section>
+
+    <section id="metricas" class="py-16 md:py-24">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold tracking-tight text-slate-800">Métricas Glucémicas Clave</h2>
+            <p class="mt-3 text-lg text-slate-600 max-w-3xl mx-auto">El sistema analiza los datos de CGM para calcular
+                métricas estandarizadas que son fundamentales para la gestión de la diabetes.</p>
+        </div>
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+            <div class="space-y-4">
+                <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200/80">
+                    <h4 class="font-semibold text-lg text-green-600">🟢 Tiempo en Rango (TIR)</h4>
+                    <p class="text-slate-600 mt-1">Porcentaje de tiempo que la glucosa se mantiene en el rango objetivo
+                        (ej. 70-180 mg/dL). El objetivo suele ser >70%.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200/80">
+                    <h4 class="font-semibold text-lg text-red-600">🔴 Tiempo Sobre Rango (TAR)</h4>
+                    <p class="text-slate-600 mt-1">Porcentaje de tiempo con niveles de glucosa altos (>180 mg/dL). El
+                        objetivo es mantenerlo bajo, idealmente <25%.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md border border-slate-200/80">
+                    <h4 class="font-semibold text-lg text-yellow-600">🟡 Tiempo Bajo Rango (TBR)</h4>
+                    <p class="text-slate-600 mt-1">Porcentaje de tiempo con niveles de glucosa bajos (<70 mg/dL),
+                        indicando hipoglucemia. El objetivo es <4%.</p>
+                </div>
+            </div>
+            <div>
+                <div class="bg-white p-8 rounded-xl shadow-md border border-slate-200/80">
+                    <h3 class="text-center font-semibold text-xl text-slate-800 mb-4">Visualización de Ejemplo</h3>
+                    <div class="chart-container h-64 md:h-80">
+                        <canvas id="metricsChart"></canvas>
+                    </div>
+                    <p id="chart-context" class="text-center mt-4 text-slate-500">Interactúe con el gráfico para ver el
+                        detalle de cada métrica. Estos datos son cruciales para entender el control glucémico
+                        general.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="conclusion" class="py-16 md:py-24 text-center">
+        <div class="bg-sky-700 text-white p-8 md:p-12 rounded-xl shadow-lg">
+            <h2 class="text-3xl font-bold tracking-tight">Conclusión y Próximos Pasos</h2>
+            <p class="mt-4 max-w-3xl mx-auto leading-relaxed">
+                GlucoForecast AI cumplió exitosamente con los objetivos propuestos, creando un prototipo funcional que
+                demuestra el potencial de la IA para mejorar la calidad de vida de las personas con DM1. El proyecto
+                integró conocimientos de desarrollo de software, gestión de proyectos y diseño de producto, resultando
+                en una herramienta escalable, segura y con un claro enfoque en el usuario.
+            </p>
+            <div class="mt-8 flex flex-wrap justify-center gap-4">
+                <a href="https://gluco-forecast-ai.vercel.app/" target="_blank"
+                   class="bg-white text-sky-700 font-semibold px-6 py-3 rounded-lg hover:bg-slate-100 transition-all">
+                    Probar la Demo Online
+                </a>
+                <a href="https://github.com/matsebas/glucoforecast-ai" target="_blank"
+                   class="bg-sky-600 font-semibold px-6 py-3 rounded-lg hover:bg-sky-500 transition-all">
+                    Explorar el Código en GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+</main>
+
+<footer class="bg-slate-100 border-t border-slate-200">
+    <div class="container mx-auto px-6 py-6 text-center text-sm text-slate-500">
+        <p>&copy; 2025 Matias Sebastiao. Proyecto Académico para la Universidad Siglo 21.</p>
+        <p class="mt-2">Esta es una representación interactiva del proyecto. No es un dispositivo médico.</p>
+        <button id="privacy-policy-button" class="mt-4 text-sky-600 hover:underline">Política de Privacidad</button>
+    </div>
+</footer>
+
+<!-- Privacy Policy Modal -->
+<div id="privacy-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white">
+            <h3 class="text-xl font-bold text-slate-800">Política de Privacidad de GlucoForecast AI</h3>
+            <button id="close-modal-button" class="text-slate-500 hover:text-slate-800">&times;</button>
+        </div>
+        <div class="p-6 text-sm leading-relaxed text-slate-600">
+            <p class="mb-4 font-semibold">Fecha de última actualización: 2 de julio de 2025</p>
+            <p class="mb-4">Es fundamental destacar que <strong>GlucoForecast AI es un prototipo tecnológico funcional
+                desarrollado en el marco de un Trabajo Final de Grado</strong>. No es un producto comercial ni un
+                dispositivo médico certificado.</p>
+
+            <h4 class="font-bold text-slate-700 mt-6 mb-2">1. Recolección de Datos</h4>
+            <p class="mb-2">Al registrarse utilizando su <strong>Cuenta de Google</strong>, el Proyecto accede a su
+                nombre, email y foto de perfil. No se recolecta ni almacena su contraseña de Google.</p>
+            <p>El Usuario podrá cargar <strong>Datos de Salud (Datos Sensibles)</strong>, como archivos CSV de su
+                Monitoreo Continuo de Glucosa (CGM) y configurar parámetros personales (ISF, ICR, etc.).</p>
+
+            <h4 class="font-bold text-slate-700 mt-6 mb-2">2. Uso y Finalidad del Tratamiento</h4>
+            <p>Los datos se utilizan exclusivamente para los fines académicos del proyecto: prestar el servicio de
+                análisis con IA, calcular métricas y gestionar la cuenta del usuario.</p>
+
+            <h4 class="font-bold text-slate-700 mt-6 mb-2">3. Transferencia de Datos a Terceros</h4>
+            <p class="mb-2">Para funcionar, el sistema transfiere datos a proveedores tecnológicos esenciales:</p>
+            <ul class="list-disc list-inside space-y-1 mb-2">
+                <li><strong>Vercel:</strong> Para alojamiento, base de datos y almacenamiento de archivos.</li>
+                <li><strong>Google (API de Gemini):</strong> Sus datos de salud son enviados a la IA de Google para
+                    generar los análisis.
+                </li>
+            </ul>
+
+            <h4 class="font-bold text-slate-700 mt-6 mb-2">4. Confidencialidad y Seguridad</h4>
+            <p>El acceso se realiza exclusivamente a través del protocolo de autenticación <strong>OAuth 2.0 de
+                Google</strong>. La seguridad del inicio de sesión es delegada a Google. El proyecto no gestiona
+                contraseñas.</p>
+
+            <h4 class="font-bold text-slate-700 mt-6 mb-2">5. Derechos de los Usuarios</h4>
+            <p>El Usuario tiene derecho de acceso, rectificación y supresión de sus datos. Puede ejercerlos enviando un
+                email a <strong>matisebastiao@gmail.com</strong>.</p>
+
+            <h4 class="font-bold text-slate-700 mt-6 mb-2">6. Reclamos</h4>
+            <p>LA AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA es el Órgano de Control de la Ley N° 25.326. Puede
+                contactarlos en datospersonales@aaip.gob.ar.</p>
+
+            <div class="mt-8 text-center">
+                <button id="close-modal-button-2"
+                        class="bg-slate-200 text-slate-700 font-semibold px-6 py-2 rounded-lg hover:bg-slate-300 transition-all">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Modal Logic
+        const privacyPolicyButton = document.getElementById('privacy-policy-button');
+        const modal = document.getElementById('privacy-modal');
+        const closeModalButton = document.getElementById('close-modal-button');
+        const closeModalButton2 = document.getElementById('close-modal-button-2');
+
+        privacyPolicyButton.addEventListener('click', () => modal.classList.remove('hidden'));
+        closeModalButton.addEventListener('click', () => modal.classList.add('hidden'));
+        closeModalButton2.addEventListener('click', () => modal.classList.add('hidden'));
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+
+        // Metrics Chart (Doughnut)
+        const ctxMetrics = document.getElementById('metricsChart').getContext('2d');
+        const metricsChart = new Chart(ctxMetrics, {
+            type: 'doughnut',
+            data: {
+                labels: ['Tiempo en Rango (TIR)', 'Tiempo Sobre Rango (TAR)', 'Tiempo Bajo Rango (TBR)'],
+                datasets: [{
+                    label: 'Distribución Glucémica',
+                    data: [75, 20, 5],
+                    backgroundColor: [
+                        'rgba(34, 197, 94, 0.7)',  // green-500
+                        'rgba(239, 68, 68, 0.7)', // red-500
+                        'rgba(234, 179, 8, 0.7)',  // yellow-500
+                    ],
+                    borderColor: [
+                        'rgb(22, 163, 74)',
+                        'rgb(220, 38, 38)',
+                        'rgb(202, 138, 4)',
+                    ],
+                    borderWidth: 1,
+                    hoverOffset: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: false
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let label = context.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed !== null) {
+                                    label += context.parsed + '%';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                onClick: (event, elements) => {
+                    if (elements.length > 0) {
+                        const chartElement = elements[0];
+                        const index = chartElement.index;
+                        const chartContext = document.getElementById('chart-context');
+                        const messages = [
+                            "El Tiempo en Rango (TIR) muestra un buen control, con el 75% del tiempo dentro del objetivo. ¡Excelente!",
+                            "El Tiempo Sobre Rango (TAR) es del 20%. Es importante revisar las comidas o dosis de insulina que podrían causar estas subidas.",
+                            "El Tiempo Bajo Rango (TBR) es del 5%. Aunque es un valor cercano al objetivo, es crucial minimizar los episodios de hipoglucemia."
+                        ];
+                        chartContext.textContent = messages[index];
+                    }
+                }
+            }
+        });
+
+        // Smooth scrolling for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+                // Close mobile menu on link click
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                }
+            });
+        });
+
+    });
+</script>
+</body>
+</html>

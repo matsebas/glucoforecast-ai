@@ -1,5 +1,11 @@
 # GlucoForecast AI
 
+[![Release](https://img.shields.io/github/v/release/matsebas/glucoforecast-ai)](https://github.com/matsebas/glucoforecast-ai/releases)
+[![Vercel Deploy](https://deploy-badge.vercel.app/vercel/gluco-forecast-ai)](https://gluco-forecast-ai.vercel.app/)
+[![License](https://img.shields.io/github/license/matsebas/glucoforecast-ai)](https://github.com/matsebas/glucoforecast-ai/blob/main/LICENSE)
+[![Issues](https://img.shields.io/github/issues/matsebas/glucoforecast-ai)](https://github.com/matsebas/glucoforecast-ai/issues)
+[![Stars](https://img.shields.io/github/stars/matsebas/glucoforecast-ai?style=social)](https://github.com/matsebas/glucoforecast-ai/stargazers)
+
 Asistente web para gestión inteligente de diabetes tipo 1, que integra datos de Monitoreo Continuo de Glucosa (CGM) y
 utiliza Inteligencia Artificial Generativa para generar reportes en lenguaje natural para apoyar a pacientes con DM1 en
 la autogestión de su condición.

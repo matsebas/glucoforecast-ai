@@ -28,7 +28,7 @@ export async function registerUploadedFile(
         recordsProcessed: 0,
         uploadedAt: new Date(),
       })
-      .returning({ id: uploadedFiles.id });
+      .returning();
 
     return result.id;
   } catch (error) {

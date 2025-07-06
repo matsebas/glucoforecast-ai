@@ -19,7 +19,7 @@ export const users = pgTable("users", {
     .$defaultFn(() => crypto.randomUUID()),
   name: varchar("name", { length: 255 }),
   email: varchar("email", { length: 255 }).notNull().unique(),
-  password: text("password").notNull(),
+  password: text("password"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   emailVerified: timestamp("email_verified_at", { withTimezone: true }).defaultNow(),
   image: text("image"),

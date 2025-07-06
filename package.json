@@ -21,7 +21,7 @@
     "@ai-sdk/react": "^1.2.12",
     "@ai-sdk/ui-utils": "^1.2.11",
     "@auth/core": "^0.40.0",
-    "@auth/drizzle-adapter": "^1.9.1",
+    "@auth/drizzle-adapter": "^1.10.0",
     "@google/generative-ai": "latest",
     "@hookform/resolvers": "^5.0.1",
     "@neondatabase/serverless": "latest",

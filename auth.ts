@@ -1,3 +1,4 @@
+import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { eq } from "drizzle-orm";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -5,12 +6,18 @@ import GoogleProvider from "next-auth/providers/google";
 import { ZodError } from "zod";
 
 import { verifyPassword } from "@/lib/auth";
-import { users } from "@/lib/db/schema";
+import { accounts, sessions, users, verificationToken } from "@/lib/db/schema";
 
 import { db } from "./lib/db";
 import { signInSchema } from "./lib/validations/auth";
 
 export const { handlers, auth } = NextAuth({
+  adapter: DrizzleAdapter(db, {
+    sessionsTable: sessions,
+    usersTable: users,
+    accountsTable: accounts,
+    verificationTokensTable: verificationToken,
+  }),
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
@@ -20,6 +27,8 @@ export const { handlers, auth } = NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      allowDangerousEmailAccountLinking: true,
+      redirectProxyUrl: process.env.NEXTAUTH_URL || "http://localhost:3000",
     }),
     CredentialsProvider({
       credentials: {
@@ -35,6 +44,10 @@ export const { handlers, auth } = NextAuth({
 
           if (!user) {
             throw new Error("Usuario no encontrado.");
+          }
+
+          if (!user.password) {
+            throw new Error("Usuario registrado con la cuenta de Google.");
           }
 
           // Verificar contraseña
@@ -59,6 +72,13 @@ export const { handlers, auth } = NextAuth({
     }),
   ],
   callbacks: {
+    async signIn({ account }) {
+      if (account?.provider === "google") {
+        // Permitir vinculación automática si el email ya existe
+        return true;
+      }
+      return true;
+    },
     async jwt({ token, user, account }) {
       if (user && account) {
         token.id = user.id;

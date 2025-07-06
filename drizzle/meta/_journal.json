@@ -8,6 +8,13 @@
       "when": 1751236976418,
       "tag": "0000_shiny_stellaris",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1751835335561,
+      "tag": "0001_many_raza",
+      "breakpoints": true
     }
   ]
 }

@@ -9,7 +9,9 @@ import { NewCsvRecord, UploadResponse } from "@/lib/types";
 /**
  * Genera una clave única para un registro CSV
  */
-function generateRecordKey(record: Pick<NewCsvRecord, 'userId' | 'timestamp' | 'recordType'>): string {
+function generateRecordKey(
+  record: Pick<NewCsvRecord, "userId" | "timestamp" | "recordType">
+): string {
   return `${record.userId}-${record.timestamp.toISOString()}-${record.recordType}`;
 }
 
@@ -62,7 +64,12 @@ export class GlucoseRecordProcessor {
       const nonExistingRecords = await this.filterNonExistingRecords(records);
 
       if (nonExistingRecords.length === 0) {
-        console.info(`Todos los registros desde ${this.options.sourceName} ya existen en la base de datos`);
+        // Reportar progreso final al 100%
+        this.reportProgress(100, totalRecords, totalRecords);
+        console.info("Se reportó el progreso final al 100%");
+        console.info(
+          `Todos los registros desde ${this.options.sourceName} ya existen en la base de datos`
+        );
         return {
           success: true,
           message: `Se procesaron ${totalRecords} registros desde ${this.options.sourceName}, pero todos ya existían`,
@@ -98,7 +105,9 @@ export class GlucoseRecordProcessor {
           } catch (error) {
             // Manejar errores de duplicados como fallback
             if (this.isDuplicateKeyError(error)) {
-              console.warn("Se detectaron registros duplicados inesperados, procesando individualmente...");
+              console.warn(
+                "Se detectaron registros duplicados inesperados, procesando individualmente..."
+              );
 
               // Procesar los registros uno por uno para evitar que un duplicado detenga el lote completo
               for (const record of uniqueRecords) {
@@ -154,7 +163,7 @@ export class GlucoseRecordProcessor {
     if (records.length === 0) return records;
 
     // Crear un mapa de claves de los registros de entrada
-    const recordKeys = records.map(record => generateRecordKey(record));
+    const recordKeys = records.map((record) => generateRecordKey(record));
 
     const existingRecords = await db
       .select({
@@ -168,15 +177,15 @@ export class GlucoseRecordProcessor {
     // Crear un Set de claves existentes para búsquedas rápidas
     const existingKeys = new Set(
       existingRecords
-        .filter(r => {
+        .filter((r) => {
           const key = generateRecordKey(r);
           return recordKeys.includes(key);
         })
-        .map(r => generateRecordKey(r))
+        .map((r) => generateRecordKey(r))
     );
 
     // Filtrar registros que no existen
-    return records.filter(record => {
+    return records.filter((record) => {
       const key = generateRecordKey(record);
       return !existingKeys.has(key);
     });

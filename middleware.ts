@@ -19,8 +19,8 @@ export async function middleware(request: NextRequest) {
   }
 
   // Rutas públicas que no requieren autenticación
-  const publicPaths = ["/login", "/register"];
-  const isPublicPath = publicPaths.some((path) => pathname.startsWith(path));
+  const publicPaths = ["/auth"];
+  const isPublicPath = pathname === "/" || publicPaths.some((path) => pathname.startsWith(path));
 
   // Verificar si el usuario está autenticado
   const token = await getToken({
@@ -33,13 +33,13 @@ export async function middleware(request: NextRequest) {
     request.cookies.get("next-auth.session-token") ||
     request.cookies.get("__Secure-next-auth.session-token");
 
-  // Si tiene cookie de sesión pero no token, podría ser un problema de decodificación
-  // Aún así, se considera al usuario como autenticado
+  // Si tiene cookie de sesión, pero no token, podría ser un problema de decodificación
+  // Aun así, se considera al usuario como autenticado
   const isAuthenticated = !!token || !!sessionCookie;
 
   // Redirigir a login si no está autenticado y la ruta no es pública
   if (!isAuthenticated && !isPublicPath) {
-    const url = new URL("/login", request.url);
+    const url = new URL("/auth/login", request.url);
     url.searchParams.set("callbackUrl", encodeURI(pathname));
     return NextResponse.redirect(url);
   }

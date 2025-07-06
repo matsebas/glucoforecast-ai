@@ -9,13 +9,13 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 import type React from "react";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default function HomeLayout({ children }: { children: React.ReactNode }) {
   const { status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.push("/auth/login");
     }
   }, [status, router]);
 

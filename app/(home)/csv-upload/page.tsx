@@ -157,6 +157,7 @@ export default function UploadPage() {
               <Input
                 id="csv-file"
                 type="file"
+                lang="es-419"
                 accept=".csv"
                 onChange={handleFileChange}
                 disabled={isUploading}

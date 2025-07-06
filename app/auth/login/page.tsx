@@ -1,9 +1,10 @@
 "use client";
 
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signIn, useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { ZodError } from "zod";
 
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -19,28 +20,40 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
-import { signUpSchema } from "@/lib/validations/auth";
+import { signInSchema } from "@/lib/validations/auth";
 
 import type React from "react";
 
 type FormErrors = {
-  name?: string[];
   email?: string[];
   password?: string[];
-  confirmPassword?: string[];
   general?: string;
 };
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const router = useRouter();
+  const { status } = useSession();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const registered = searchParams.get("registered") === "true";
+
   const [formData, setFormData] = useState({
-    name: "",
     email: "",
     password: "",
-    confirmPassword: "",
   });
   const [errors, setErrors] = useState<FormErrors>({});
+  const [success, setSuccess] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      router.push(callbackUrl);
+    }
+
+    if (registered) {
+      setSuccess("Registro exitoso. Ahora puede iniciar sesión.");
+    }
+  }, [status, router, callbackUrl, registered]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -51,7 +64,7 @@ export default function RegisterPage() {
 
   const validateForm = () => {
     try {
-      signUpSchema.parse(formData);
+      signInSchema.parse(formData);
       setErrors({});
       return true;
     } catch (error) {
@@ -61,7 +74,7 @@ export default function RegisterPage() {
         error.errors.forEach((err) => {
           const path = err.path[0] as keyof FormErrors;
           if (path === "general") {
-            formattedErrors[path] = err.message; // assign string directly
+            formattedErrors[path] = err.message;
           } else {
             if (!formattedErrors[path]) {
               formattedErrors[path] = [];
@@ -85,49 +98,50 @@ export default function RegisterPage() {
     }
 
     setIsLoading(true);
+    setErrors({});
+    setSuccess("");
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: formData.email,
+        password: formData.password,
+        redirectTo: callbackUrl,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        if (data.details) {
-          // Normalizar 'general' si es un array
-          if (Array.isArray(data.details.general)) {
-            data.details.general = data.details.general.join(", ");
-          }
-          setErrors(data.details);
-        } else {
-          throw new Error(data.error || "Error al registrar usuario");
-        }
-        return;
+      if (result?.error) {
+        console.error(">> LOGIN: Error de inicio de sesión:", result.error);
+        setErrors({
+          general: "Credenciales inválidas. Por favor, intente nuevamente.",
+        });
+      } else if (result?.url) {
+        console.info(">> LOGIN: Redirigiendo a:", result.url);
+        router.push(result.url);
       }
-
-      // Redirigir al login después de un registro exitoso
-      router.push("/login?registered=true");
     } catch (error) {
-      console.error("Error de registro:", error);
+      console.error("Error de inicio de sesión:", error);
       setErrors({
-        general: error instanceof Error ? error.message : "Error al registrar usuario",
+        general: "Ocurrió un error al iniciar sesión. Por favor, intente nuevamente.",
       });
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (status === "loading") {
+    return (
+      <div className="w-full max-w-md">
+        <div className="size-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
+    <div className="w-full max-w-md">
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Crear cuenta</CardTitle>
-          <CardDescription>Ingrese sus datos para registrarse en GlucoForecast AI</CardDescription>
+          <CardTitle className="text-2xl font-bold">GlucoForecast AI</CardTitle>
+          <CardDescription>Ingrese sus credenciales para acceder a su cuenta</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -138,18 +152,12 @@ export default function RegisterPage() {
               </Alert>
             )}
 
-            <div className="space-y-2">
-              <Label htmlFor="name">Nombre</Label>
-              <Input
-                id="name"
-                name="name"
-                placeholder="Su nombre completo"
-                value={formData.name}
-                onChange={handleChange}
-                required
-              />
-              {errors.name && <p className="text-sm text-red-500">{errors.name[0]}</p>}
-            </div>
+            {success && (
+              <Alert variant="default" className="bg-green-50 text-green-800 border-green-200">
+                <CheckCircle2 className="size-4 text-green-600" />
+                <AlertDescription>{success}</AlertDescription>
+              </Alert>
+            )}
 
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -164,13 +172,11 @@ export default function RegisterPage() {
               />
               {errors.email && <p className="text-sm text-red-500">{errors.email[0]}</p>}
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="password">Contraseña</Label>
               <PasswordInput
                 id="password"
                 name="password"
-                placeholder="Mínimo 8 caracteres"
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -178,35 +184,26 @@ export default function RegisterPage() {
               {errors.password && <p className="text-sm text-red-500">{errors.password[0]}</p>}
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirmar Contraseña</Label>
-              <PasswordInput
-                id="confirmPassword"
-                name="confirmPassword"
-                placeholder="Repita su contraseña"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-              {errors.confirmPassword && (
-                <p className="text-sm text-red-500">{errors.confirmPassword[0]}</p>
-              )}
+            <div className="text-right">
+              <Link href="/auth/forgot-password" className="text-sm text-primary hover:underline">
+                ¿Olvidó su contraseña?
+              </Link>
             </div>
 
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Registrando..." : "Registrarse"}
+              {isLoading ? "Iniciando sesión..." : "Iniciar sesión"}
             </Button>
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
           <div className="text-center text-sm">
-            ¿Ya tiene una cuenta?{" "}
-            <Link href="/login" className="text-primary hover:underline">
-              Iniciar sesión
+            ¿No tiene una cuenta?{" "}
+            <Link href="/auth/register" className="text-primary hover:underline">
+              Registrarse
             </Link>
           </div>
-          <p className="text-xs text-center text-gray-500">
-            Al registrarse, acepta nuestros términos de servicio y política de privacidad.
+          <p className="text-sm text-center text-gray-500">
+            GlucoForecast AI: Gestión Inteligente de Diabetes Tipo 1
           </p>
         </CardFooter>
       </Card>

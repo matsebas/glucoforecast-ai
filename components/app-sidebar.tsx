@@ -104,7 +104,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           {theme === "dark" ? <Moon className="size-4" /> : <Sun className="size-4" />}
           <span>{theme === "dark" ? "Modo oscuro" : "Modo claro"}</span>
         </Toggle>
-        <Button variant="outline" onClick={() => signOut({ redirect: true, redirectTo: "/login" })}>
+        <Button variant="outline" onClick={() => signOut({ redirect: true, redirectTo: "/" })}>
           <LogOut className="mr-2 size-4" />
           Cerrar sesión
         </Button>

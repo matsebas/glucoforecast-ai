@@ -1,24 +1,28 @@
+import { neon } from "@neondatabase/serverless";
+import { drizzle as drizzleNeon } from "drizzle-orm/neon-http";
+import { drizzle as drizzlePostgres } from "drizzle-orm/postgres-js";
+import postgres from "postgres";
+
 import * as schema from "./schema";
 
-// Configuración inteligente: usar PostgreSQL local si está disponible, sino Neon
-const isLocalPostgres = process.env.USE_LOCAL_DB === "true" ||
-                       (process.env.DATABASE_URL?.includes("localhost") && !process.env.VERCEL) || 
-                       (process.env.DATABASE_URL?.includes("127.0.0.1") && !process.env.VERCEL);
+type NeonDb = ReturnType<typeof drizzleNeon>;
+type PostgresDb = ReturnType<typeof drizzlePostgres>;
+type DB = NeonDb | PostgresDb;
 
-let db: any;
+// Configuración para usar Postgres local si está disponible, si no Neon
+const isLocalPostgres =
+  process.env.USE_LOCAL_DB === "true" ||
+  (process.env.DATABASE_URL?.includes("localhost") && !process.env.VERCEL) ||
+  (process.env.DATABASE_URL?.includes("127.0.0.1") && !process.env.VERCEL);
+
+let db: DB;
 
 if (isLocalPostgres) {
-  // PostgreSQL local para desarrollo
-  const { drizzle } = require("drizzle-orm/postgres-js");
-  const postgres = require("postgres");
   const client = postgres(process.env.DATABASE_URL!);
-  db = drizzle(client, { schema });
+  db = drizzlePostgres(client, { schema });
 } else {
-  // Neon para producción/Vercel
-  const { neon } = require("@neondatabase/serverless");
-  const { drizzle } = require("drizzle-orm/neon-http");
   const sql = neon(process.env.DATABASE_URL!);
-  db = drizzle(sql, { schema });
+  db = drizzleNeon(sql, { schema });
 }
 
 export { db };

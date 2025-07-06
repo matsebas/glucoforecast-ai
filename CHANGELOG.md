@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.1.2] - 2025-07-06
+
+### Fixed
+
+- Corregido problema de autenticación en producción con middleware NextAuth v5 y Edge Runtime
+- Solucionado bug donde archivos CSV duplicados quedaban en estado "Subiendo..." indefinidamente
+- Corregido manejo de cookies de sesión en entornos de producción vs desarrollo
+- Mejorada vinculación automática de cuentas Google con usuarios existentes
+- Corregido toggle de tema que no funcionaba correctamente con tema del sistema por defecto
+
+### Enhanced
+
+- Refactorizada configuración de autenticación para compatibilidad con Edge Runtime
+- Mejorado toggle de tema con ciclo de 3 estados: Claro → Oscuro → Sistema → Claro
+- Componentizado ThemeToggle para mejor reutilización y separación de responsabilidades
+- Aplicadas mejores prácticas React con memoización y hooks optimizados
+- Optimizado reporte de progreso en carga de archivos CSV
+- Separada configuración auth en archivos edge-compatible y configuración completa
+
+### Technical
+
+- Migración completa a mejores prácticas de NextAuth v5
+- Middleware ahora compatible con Edge Runtime de Vercel
+- Eliminada duplicación de código en configuración de autenticación
+- Creado componente reutilizable ThemeToggle con API flexible (variant, size, className)
+- Mejorada arquitectura de componentes con principio de responsabilidad única
+
+## [1.1.1] - 2025-07-06
+
+### Fixed
+
+- Corregido problema de redirects con GoogleProvider en producción
+- Actualizado esquema de base de datos para usuarios OAuth
+- Mejorados estilos para mejor contraste y accesibilidad
+
+### Added
+
+- Auto-vinculación de cuentas Google con usuarios existentes por email
+
 ## [1.1.0] - 2025-07-06
 
 ### Added

@@ -15,7 +15,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { useTheme } from "next-themes";
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +28,6 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar";
-import { Toggle } from "@/components/ui/toggle";
 
 import { UserProfile } from "./user-profile";
 
@@ -36,9 +35,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
 
-  const isActive = (path: string) => {
-    return pathname === path;
-  };
+  const isActive = useCallback(
+    (path: string) => {
+      return pathname === path;
+    },
+    [pathname]
+  );
+
+  const toggleTheme = useCallback(() => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  }, [theme, setTheme]);
+
+  const themeIcon = useMemo(() => {
+    return theme === "dark" ? <Moon className="size-4" /> : <Sun className="size-4" />;
+  }, [theme]);
+
+  const themeText = useMemo(() => {
+    return theme === "dark" ? "Modo oscuro" : "Modo claro";
+  }, [theme]);
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -95,15 +109,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="p-4 flex-col gap-2">
-        <Toggle
-          aria-label="Toggle dark mode"
-          pressed={theme === "dark"}
-          onPressedChange={(pressed) => setTheme(pressed ? "dark" : "light")}
-          variant="outline"
-        >
-          {theme === "dark" ? <Moon className="size-4" /> : <Sun className="size-4" />}
-          <span>{theme === "dark" ? "Modo oscuro" : "Modo claro"}</span>
-        </Toggle>
+        <Button aria-label="Toggle dark mode" onClick={toggleTheme} variant="outline">
+          {themeIcon}
+          <span>{themeText}</span>
+        </Button>
         <Button variant="outline" onClick={() => signOut({ redirect: true, redirectTo: "/" })}>
           <LogOut className="mr-2 size-4" />
           Cerrar sesión

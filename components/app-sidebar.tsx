@@ -1,21 +1,18 @@
 "use client";
 
 import {
-  BarChart3,
-  Bot,
+  BarChart3Icon,
+  BotIcon,
   CloudCheckIcon,
   DropletIcon,
-  FileUp,
-  LogOut,
-  Moon,
-  Settings,
-  Sun,
+  FileUpIcon,
+  LogOutIcon,
+  SettingsIcon,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { useTheme } from "next-themes";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -29,11 +26,11 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar";
 
+import { ThemeToggle } from "./theme-toggle";
 import { UserProfile } from "./user-profile";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
 
   const isActive = useCallback(
     (path: string) => {
@@ -41,18 +38,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     },
     [pathname]
   );
-
-  const toggleTheme = useCallback(() => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  }, [theme, setTheme]);
-
-  const themeIcon = useMemo(() => {
-    return theme === "dark" ? <Moon className="size-4" /> : <Sun className="size-4" />;
-  }, [theme]);
-
-  const themeText = useMemo(() => {
-    return theme === "dark" ? "Modo oscuro" : "Modo claro";
-  }, [theme]);
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -69,7 +54,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={isActive("/dashboard")}>
               <Link href="/dashboard">
-                <BarChart3 className="size-5" />
+                <BarChart3Icon className="size-5" />
                 <span>Dashboard</span>
               </Link>
             </SidebarMenuButton>
@@ -77,7 +62,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={isActive("/ai")}>
               <Link href="/ai">
-                <Bot className="size-5" />
+                <BotIcon className="size-5" />
                 <span>Asistente IA</span>
               </Link>
             </SidebarMenuButton>
@@ -85,7 +70,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={isActive("/csv-upload")}>
               <Link href="/csv-upload">
-                <FileUp className="size-5" />
+                <FileUpIcon className="size-5" />
                 <span>Subir CSV</span>
               </Link>
             </SidebarMenuButton>
@@ -101,7 +86,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={isActive("/settings")}>
               <Link href="/settings">
-                <Settings className="size-5" />
+                <SettingsIcon className="size-5" />
                 <span>Configuración</span>
               </Link>
             </SidebarMenuButton>
@@ -109,12 +94,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter className="p-4 flex-col gap-2">
-        <Button aria-label="Toggle dark mode" onClick={toggleTheme} variant="outline">
-          {themeIcon}
-          <span>{themeText}</span>
-        </Button>
+        <ThemeToggle variant="outline" />
         <Button variant="outline" onClick={() => signOut({ redirect: true, redirectTo: "/" })}>
-          <LogOut className="mr-2 size-4" />
+          <LogOutIcon className="mr-2 size-4" />
           Cerrar sesión
         </Button>
       </SidebarFooter>

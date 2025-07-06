@@ -1,56 +1,32 @@
 import { NextResponse } from "next/server";
-import { getToken } from "next-auth/jwt";
+import NextAuth from "next-auth";
 
-import type { NextRequest } from "next/server";
+import authConfig from "./auth.config";
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+const { auth } = NextAuth(authConfig);
 
-  // Rutas que no deben ser procesadas por el middleware
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api/auth") ||
-    pathname.includes("favicon.ico") ||
-    pathname.includes(".png") ||
-    pathname.includes(".jpg") ||
-    pathname.includes(".svg")
-  ) {
-    return NextResponse.next();
-  }
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isAuthenticated = !!req.auth;
 
   // Rutas públicas que no requieren autenticación
   const publicPaths = ["/auth"];
-  const isPublicPath = pathname === "/" || publicPaths.some((path) => pathname.startsWith(path));
-
-  // Verificar si el usuario está autenticado
-  const token = await getToken({
-    req: request,
-    secret: process.env.NEXTAUTH_SECRET,
-  });
-
-  // Verificar si hay una cookie de sesión
-  const sessionCookie =
-    request.cookies.get("next-auth.session-token") ||
-    request.cookies.get("__Secure-next-auth.session-token");
-
-  // Si tiene cookie de sesión, pero no token, podría ser un problema de decodificación
-  // Aun así, se considera al usuario como autenticado
-  const isAuthenticated = !!token || !!sessionCookie;
+  const isPublicPath = nextUrl.pathname === "/" || publicPaths.some((path) => nextUrl.pathname.startsWith(path));
 
   // Redirigir a login si no está autenticado y la ruta no es pública
   if (!isAuthenticated && !isPublicPath) {
-    const url = new URL("/auth/login", request.url);
-    url.searchParams.set("callbackUrl", encodeURI(pathname));
+    const url = new URL("/auth/login", nextUrl.origin);
+    url.searchParams.set("callbackUrl", encodeURI(nextUrl.pathname));
     return NextResponse.redirect(url);
   }
 
   // Redirigir al dashboard si está autenticado y está en una ruta pública o raíz
-  if (isAuthenticated && (isPublicPath || pathname === "/")) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+  if (isAuthenticated && (isPublicPath || nextUrl.pathname === "/")) {
+    return NextResponse.redirect(new URL("/dashboard", nextUrl.origin));
   }
 
   return NextResponse.next();
-}
+});
 
 // Configurar las rutas que deben ser manejadas por el middleware
 export const config = {

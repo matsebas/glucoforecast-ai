@@ -36,7 +36,7 @@ export async function processLibreViewCSV(
 
     const dataLines = csvLines.slice(2).join("\n");
 
-    // Parsear el contenido CSV
+    // Parsear el contenido CSV con opciones más tolerantes
     const records = parse(dataLines, {
       columns: [
         "device",
@@ -61,6 +61,11 @@ export async function processLibreViewCSV(
       ],
       skip_empty_lines: true,
       trim: true,
+      // Opciones para manejar comillas problemáticas
+      quote: '"',
+      escape: '"',
+      relax_quotes: true, // Permite comillas no balanceadas
+      relax_column_count: true, // Permite columnas faltantes o extra
       cast: (value, context) => {
         if (
           context.column === "historicGlucose" ||

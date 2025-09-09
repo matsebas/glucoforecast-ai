@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Loader } from "@/components/ui/loader";
 import { Progress } from "@/components/ui/progress";
 import { UploadResponse } from "@/lib/types";
+import { PROCESSING_MESSAGES, UI_LABELS } from "@/lib/constants/messages";
 
 import type React from "react";
 
@@ -28,6 +29,8 @@ export default function UploadPage() {
   const [processedCount, setProcessedCount] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
   const [eventSource, setEventSource] = useState<EventSource | null>(null);
+  const [isValidating, setIsValidating] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -61,6 +64,8 @@ export default function UploadPage() {
     setProgress(0);
     setProcessedCount(0);
     setTotalCount(0);
+    setIsValidating(false);
+    setIsProcessing(false);
 
     try {
       const formData = new FormData();
@@ -77,10 +82,14 @@ export default function UploadPage() {
         throw new Error(result.message || "Error al subir el archivo");
       }
 
+      setIsUploading(false);
+
       setUploadStatus({
         success: true,
-        message: "Archivo recibido. Procesando registros...",
+        message: PROCESSING_MESSAGES.FILE_RECEIVED,
       });
+
+      setIsValidating(true);
 
       if (result.fileId) {
         // Comienza a escuchar los eventos de progreso
@@ -89,24 +98,79 @@ export default function UploadPage() {
 
         es.onmessage = (event) => {
           const data = JSON.parse(event.data);
-          setProgress(data.progress);
-          setProcessedCount(data.processedCount);
-          setTotalCount(data.totalCount);
+          console.info(
+            `[${new Date().toISOString()}] 🎯 Frontend recibió [${data.type}]: ${data.progress}% (${data.processedCount}/${data.totalCount})`
+          );
 
-          if (data.progress === 100) {
-            es.close();
-            setEventSource(null);
+          // Manejar diferentes tipos de eventos SSE
+          switch (data.type) {
+            case "ready": {
+              console.info("🔗 Conexión SSE establecida");
+              break;
+            }
 
-            setUploadStatus({
-              success: true,
-              message: "Procesamiento completado con éxito",
-              count: data.processedCount,
-            });
+            case "validation-started": {
+              setIsValidating(true);
+              setIsProcessing(false);
+              setUploadStatus({
+                success: true,
+                message: data.message || PROCESSING_MESSAGES.VALIDATION_IN_PROGRESS,
+              });
+              break;
+            }
 
-            // Redirige al dashboard a los 2 segundos de completar el procesamiento
-            setTimeout(() => {
-              router.push("/dashboard");
-            }, 2000);
+            case "validation-completed": {
+              setIsValidating(false);
+
+              if (data.newRecords === 0) {
+                // Si no hay registros nuevos, no habrá procesamiento
+                setUploadStatus({
+                  success: true,
+                  message: data.message,
+                });
+              } else {
+                // Si hay registros nuevos, preparar para procesamiento
+                setUploadStatus({
+                  success: true,
+                  message: data.message,
+                });
+                setTotalCount(data.newRecords);
+              }
+              break;
+            }
+
+            case "processing": {
+              setIsProcessing(true);
+              setProgress(data.progress);
+              setProcessedCount(data.processedCount);
+              setTotalCount(data.totalCount);
+              break;
+            }
+
+            case "completed": {
+              es.close();
+              setEventSource(null);
+              setIsValidating(false);
+              setIsProcessing(false);
+
+              const insertedCount = data.insertedCount ?? 0;
+              setUploadStatus({
+                success: true,
+                message: data.message,
+                count: insertedCount,
+              });
+
+              // Redirige al dashboard a los 2 segundos de completar el procesamiento
+              // setTimeout(() => {
+              //   router.push("/dashboard");
+              // }, 2000);
+              break;
+            }
+
+            default: {
+              console.warn("Evento SSE desconocido:", data.type, data);
+              break;
+            }
           }
         };
 
@@ -162,7 +226,7 @@ export default function UploadPage() {
                 onChange={handleFileChange}
                 disabled={isUploading}
               />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground italic">
                 Formatos aceptados: CSV exportado desde LibreView
               </p>
             </div>
@@ -174,22 +238,37 @@ export default function UploadPage() {
                 ) : (
                   <AlertCircle className="size-4" />
                 )}
-                <AlertTitle>{uploadStatus.success ? "Éxito" : "Error"}</AlertTitle>
+                <AlertTitle>{uploadStatus.success ? UI_LABELS.UPLOAD_SUCCESS : UI_LABELS.UPLOAD_ERROR}</AlertTitle>
                 <AlertDescription>
                   {uploadStatus.message}
-                  {uploadStatus.count && (
+                  {uploadStatus.count != null && uploadStatus.count > 0 && (
                     <span className="block mt-1 font-medium">
-                      Se han procesado {uploadStatus.count} registros de glucosa.
+                      {PROCESSING_MESSAGES.RECORDS_PROCESSED(uploadStatus.count)}
                     </span>
                   )}
                 </AlertDescription>
               </Alert>
             )}
 
-            {isUploading && progress > 0 && (
+            {/* Progreso infinito durante validación */}
+            {isValidating && (
               <div className="mt-4 space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span>Procesando registros...</span>
+                  <span>{PROCESSING_MESSAGES.VALIDATION_IN_PROGRESS}</span>
+                  <span className="text-muted-foreground">{UI_LABELS.VALIDATION_STATUS}</span>
+                </div>
+                <Progress isIndeterminate={true} className="h-2" />
+                <p className="text-sm text-muted-foreground">
+                  {PROCESSING_MESSAGES.VALIDATION_DESCRIPTION}
+                </p>
+              </div>
+            )}
+
+            {/* Progreso real durante procesamiento */}
+            {isProcessing && progress < 100 && (
+              <div className="mt-4 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>{PROCESSING_MESSAGES.PROCESSING_RECORDS}</span>
                   <span>{progress}%</span>
                 </div>
                 <Progress value={progress} className="h-2" />
@@ -198,23 +277,25 @@ export default function UploadPage() {
                     Procesados {processedCount} de {totalCount} registros
                   </p>
                 )}
-                <Alert className="mt-2 border-amber-500 bg-amber-50 dark:bg-amber-950/20">
-                  <AlertCircle className="size-4 text-amber-500" />
-                  <AlertTitle className="text-amber-700 dark:text-amber-400">Importante</AlertTitle>
-                  <AlertDescription className="text-amber-700 dark:text-amber-400">
-                    No salga de esta página mientras se procesa el archivo. Si lo hace, el proceso
-                    podría interrumpirse. Si necesita continuar más tarde, puede volver a esta
-                    página y cargar el mismo archivo para reanudar el procesamiento.
-                  </AlertDescription>
-                </Alert>
               </div>
             )}
 
+            {/* Alerta de precaución solo durante procesamiento real */}
+            {isProcessing && (
+              <Alert className="mt-2 border-amber-500 bg-amber-50 dark:bg-amber-950/20">
+                <AlertCircle className="size-4 text-amber-500" />
+                <AlertTitle className="text-amber-700 dark:text-amber-400">Importante</AlertTitle>
+                <AlertDescription className="text-amber-700 dark:text-amber-400">
+                  No salga de esta página mientras se procesa el archivo. Si lo hace, el proceso
+                  podría interrumpirse.
+                </AlertDescription>
+              </Alert>
+            )}
             <Button type="submit" disabled={!file || isUploading} className="w-full sm:w-auto">
               {isUploading ? (
                 <div className="flex items-center gap-2">
-                  <Loader size="sm" />
-                  <span>Subiendo...</span>
+                  <Loader />
+                  <span>Subiendo archivo...</span>
                 </div>
               ) : (
                 <>

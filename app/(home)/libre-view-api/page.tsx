@@ -19,6 +19,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { LibreUserData } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 interface LibreViewSyncFormValues {
   email: string;
   password: string;

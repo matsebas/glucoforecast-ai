@@ -9,7 +9,7 @@ import { signUpSchema } from "@/lib/validations/auth";
 
 export async function POST(request: Request) {
   try {
-    console.debug("Iniciando registro de usuario..., request:", request);
+    console.info("Iniciando registro de usuario..., request:", request);
 
     const body = await request.json();
 

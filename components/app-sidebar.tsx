@@ -83,6 +83,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          {/*<SidebarMenuItem>*/}
+          {/*  <SidebarMenuButton asChild isActive={isActive("/libre-view-reports")}>*/}
+          {/*    <Link href="/libre-view-reports">*/}
+          {/*      <FileChartLineIcon className="size-5" />*/}
+          {/*      <span>LibreView Reports</span>*/}
+          {/*    </Link>*/}
+          {/*  </SidebarMenuButton>*/}
+          {/*</SidebarMenuItem>*/}
           <SidebarMenuItem>
             <SidebarMenuButton asChild isActive={isActive("/settings")}>
               <Link href="/settings">

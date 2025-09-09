@@ -3,6 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { LibreLinkService } from "@/lib/services/libreview/api";
 
+export const dynamic = "force-dynamic";
+
+const servicesCache = new Map<string, LibreLinkService>();
+
 /**
  * POST /api/libreview
  * Autentica con LibreView y devuelve información del usuario
@@ -33,8 +37,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Autenticar con LibreView
-    const service = new LibreLinkService(userId);
+    // Autenticar con LibreView o reutilizar service si ya existe en cache
+    let service = servicesCache.get(userId);
+    if (!service) {
+      service = new LibreLinkService(userId);
+      servicesCache.set(userId, service);
+    }
+
     const userData = await service.authenticate(email, password);
 
     return NextResponse.json({

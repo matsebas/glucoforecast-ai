@@ -3,8 +3,9 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { csvRecords } from "@/lib/db/schema";
 import { updateProcessedRecords } from "@/lib/services/files";
-import { updateProgress } from "@/lib/services/progress";
+import { updateProgress, sendEvent } from "@/lib/services/progress";
 import { NewCsvRecord, UploadResponse } from "@/lib/types";
+import { PROCESSING_MESSAGES } from "@/lib/constants/messages";
 
 /**
  * Genera una clave única para un registro CSV
@@ -37,7 +38,7 @@ export class GlucoseRecordProcessor {
   constructor(userId: string, options: RecordProcessorOptions = {}) {
     this.userId = userId;
     this.options = {
-      batchSize: 100,
+      batchSize: 10,
       sourceName: "Unknown",
       ...options,
     };
@@ -57,16 +58,33 @@ export class GlucoseRecordProcessor {
       let processedCount = 0;
       let insertedCount = 0;
 
-      // Reportar progreso inicial
-      this.reportProgress(0, 0, totalRecords);
+      // Iniciar validación
+      this.sendEvent("validation-started", { 
+        totalRecords,
+        message: PROCESSING_MESSAGES.VALIDATION_STARTED
+      });
 
       // Filtrar registros que ya existen en la base de datos
       const nonExistingRecords = await this.filterNonExistingRecords(records);
 
+      // Validación completada
+      this.sendEvent("validation-completed", { 
+        totalRecords,
+        duplicateCount: totalRecords - nonExistingRecords.length,
+        newRecords: nonExistingRecords.length,
+        message: nonExistingRecords.length === 0 
+          ? PROCESSING_MESSAGES.ALL_DUPLICATES
+          : PROCESSING_MESSAGES.NEW_RECORDS_FOUND(nonExistingRecords.length)
+      });
+
       if (nonExistingRecords.length === 0) {
-        // Reportar progreso final al 100%
-        this.reportProgress(100, totalRecords, totalRecords);
-        console.info("Se reportó el progreso final al 100%");
+        // Completar sin procesamiento si todos los registros ya existen
+        this.sendEvent("completed", {
+          totalRecords,
+          insertedCount: 0,
+          message: PROCESSING_MESSAGES.COMPLETED_ALL_DUPLICATES
+        });
+
         console.info(
           `Todos los registros desde ${this.options.sourceName} ya existen en la base de datos`
         );
@@ -84,6 +102,10 @@ export class GlucoseRecordProcessor {
 
       // Procesar en lotes
       const batchSize = this.options.batchSize!;
+      console.info(
+        `[${new Date().toISOString()}] 🚀 Iniciando procesamiento de ${nonExistingRecords.length} registros en lotes de ${batchSize}`
+      );
+
       for (let i = 0; i < nonExistingRecords.length; i += batchSize) {
         const batch = nonExistingRecords.slice(i, i + batchSize);
 
@@ -128,10 +150,15 @@ export class GlucoseRecordProcessor {
           }
         }
 
-        // Actualizar progreso
+        // Actualizar progreso después de cada lote
         processedCount += batch.length;
+        // Progreso del 0 al 100% basado en registros procesados
         const progress = Math.round((processedCount / nonExistingRecords.length) * 100);
-        this.reportProgress(progress, processedCount, totalRecords);
+
+        console.info(
+          `[${new Date().toISOString()}] 🔄 ${PROCESSING_MESSAGES.BATCH_PROCESSED(processedCount, nonExistingRecords.length, progress)}`
+        );
+        this.reportProgress(progress, processedCount, nonExistingRecords.length, insertedCount);
       }
 
       // Actualizar el número de registros procesados si es un archivo
@@ -194,13 +221,22 @@ export class GlucoseRecordProcessor {
   /**
    * Reporta el progreso usando ambos mecanismos disponibles
    */
-  private reportProgress(progress: number, processedCount: number, totalCount: number): void {
+  private reportProgress(progress: number, processedCount: number, totalCount: number, insertedCount?: number): void {
     if (this.options.onProgress) {
       this.options.onProgress(progress, processedCount, totalCount);
     }
 
     if (this.options.fileId) {
-      updateProgress(this.options.fileId, progress, processedCount, totalCount);
+      updateProgress(this.options.fileId, progress, processedCount, totalCount, insertedCount);
+    }
+  }
+
+  /**
+   * Envía un evento específico
+   */
+  private sendEvent(type: string, data: any): void {
+    if (this.options.fileId) {
+      sendEvent(this.options.fileId, type, data);
     }
   }
 

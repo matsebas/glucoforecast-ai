@@ -38,6 +38,13 @@ export async function POST(req: NextRequest) {
     const service = new LibreLinkService(userId);
     const userData = await service.authenticate(email, password, patientId);
 
+    console.info("Datos del usuario obtenidos:", {
+      userId,
+      email,
+      patientId,
+      connections: userData.connections.length,
+    });
+
     // Buscar la conexión del paciente específico
     const patientConnection = userData.connections.find((conn) => conn.patientId === patientId);
 

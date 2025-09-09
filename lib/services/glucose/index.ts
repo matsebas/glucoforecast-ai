@@ -158,7 +158,7 @@ export async function getUserMultiPeriodGlucoseAnalysis(
     const result: MultiPeriodGlucoseAnalysis = {};
 
     for (const period of periods) {
-      console.debug(">> GLUCOSE: Calculando análisis de glucosa para período:", period);
+      console.info(">> GLUCOSE: Calculando análisis de glucosa para período:", period);
       result[period] = await getUserGlucoseAnalysis(userId, period, true);
     }
 
@@ -188,7 +188,7 @@ export async function getUserGlucoseAnalysis(
         storedMetrics &&
         new Date().getTime() - new Date(storedMetrics.calculatedAt).getTime() < 24 * 60 * 60 * 1000
       ) {
-        console.debug(">> USANDO MÉTRICAS ALMACENADAS", timePeriod);
+        console.info(">> USANDO MÉTRICAS ALMACENADAS", timePeriod);
 
         // Obtener algunas lecturas recientes para el texto
         const recentReadings = await db
@@ -215,9 +215,9 @@ export async function getUserGlucoseAnalysis(
 
         // Generar textos para la interfaz
         const recentReadingsText = generateRecentReadingsText(recentReadings);
-        console.debug(">> TEXTOS GENERADOS", recentReadingsText);
+        console.info(">> TEXTOS GENERADOS", recentReadingsText);
         const metricsText = generateMetricsText(metrics, timePeriod);
-        console.debug(">> MÉTRICAS GENERADAS", metricsText);
+        console.info(">> MÉTRICAS GENERADAS", metricsText);
 
         return {
           readings: recentReadings,
@@ -249,7 +249,7 @@ export async function getUserGlucoseAnalysis(
 
     // Si no hay lecturas, devolver valores por defecto
     if (csvReadings.length === 0) {
-      console.debug(">> NO HAY LECTURAS DE GLUCOSA", timePeriod);
+      console.info(">> NO HAY LECTURAS DE GLUCOSA", timePeriod);
       return {
         readings: [],
         metrics: {

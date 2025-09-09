@@ -6,6 +6,10 @@ import { processLibreViewCSV } from "@/lib/services/libreview";
 import { globalProgressCallbacks } from "@/lib/services/progress";
 import { UploadResponse } from "@/lib/types";
 
+// Configuración para Vercel - timeout extendido para procesamiento de CSV
+export const maxDuration = 300; // 5 minutos
+export const dynamic = "force-dynamic";
+
 export async function POST(request: NextRequest): Promise<NextResponse<UploadResponse>> {
   try {
     // Verificar la autenticación del usuario
@@ -49,14 +53,7 @@ export async function POST(request: NextRequest): Promise<NextResponse<UploadRes
     const fileId = await registerUploadedFile(userId, file.name, file.size, file.type);
 
     // Iniciar el procesamiento en segundo plano
-    processLibreViewCSV(userId, fileId, file, (progress, processed, total) => {
-      // Esta función será llamada con actualizaciones de progreso
-      // El endpoint SSE usará este callback para enviar actualizaciones al cliente
-      const callback = globalProgressCallbacks.get(fileId.toString());
-      if (callback) {
-        callback(progress, processed, total);
-      }
-    }).catch(error => {
+    processLibreViewCSV(userId, fileId, file).catch((error) => {
       console.error("Error en el procesamiento en segundo plano:", error);
     });
 

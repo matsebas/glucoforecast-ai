@@ -21,77 +21,101 @@ export class LibreLinkService {
    * Inicializa y autentica el cliente de LibreLink
    * @param email Email del usuario en LibreLink
    * @param password Contraseña del usuario en LibreLink
-   * @param patientConnection Conexión del paciente (opcional)
+   * @param patientId Id del paciente (opcional)
    * @returns LibreUserData si la autenticación fue exitosa
    */
-  async authenticate(
-    email: string,
-    password: string,
-    patientConnection?: LibreConnection
-  ): Promise<LibreUserData> {
+  async authenticate(email: string, password: string, patientId?: string): Promise<LibreUserData> {
     if (!email || !password) {
       return Promise.reject(new Error("Email y contraseña son obligatorios"));
     }
 
     try {
-      // Inicializar el cliente
       this.client = new LibreLinkClient({
         email,
         password,
-        patientId: patientConnection?.patientId,
+        patientId,
       });
 
       console.info(
         "Cliente de LibreLink inicializado:",
         email,
-        patientConnection?.patientId || "SIN conexión específica"
+        patientId || "SIN Paciente específico"
       );
 
-      // Intentar login
       const response = await this.client.login();
 
-      // Validar respuesta de login
+      // 🚨 Manejar caso "debe aceptar términos"
+      if (response?.status === 4) {
+        console.warn("El usuario debe aceptar términos, enviando aceptación...");
+
+        const token = response.data.authTicket.token; // el Bearer
+        const api = "https://api.libreview.io/auth/continue/pp";
+
+        const touRes = await fetch(api, {
+          method: "POST",
+          headers: {
+            Accept: "application/json, application/xml",
+            "Content-Type": "application/json",
+            product: "llu.android",
+            version: "4.7",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({}), // algunos back aceptan vacío, otros requieren {"accept": true}
+        });
+
+        console.info(touRes);
+        if (!touRes.ok) {
+          throw new Error(`Falló aceptación de términos: ${touRes.status}`);
+        }
+
+        console.info("Términos aceptados, reintentando login...");
+        const retryResponse = await this.client.login();
+
+        if (!retryResponse || retryResponse.status !== 0) {
+          throw new Error(
+            `Autenticación fallida después de aceptar términos. Estado: ${retryResponse?.status || "desconocido"}`
+          );
+        }
+
+        return await this.fetchUserData(retryResponse);
+      }
+
+      // 🚨 Validar login normal
       if (!response || response.status !== 0) {
-        return Promise.reject(
-          new Error(
-            `Autenticación fallida con LibreLink. Estado: ${response?.status || "desconocido"}`
-          )
+        throw new Error(
+          `Autenticación fallida con LibreLink. Estado: ${response?.status || "desconocido"}`
         );
       }
 
-      // Obtener conexiones
-      const connectionData: LibreConnectionsResponse = await this.client.fetchConnections();
-
-      // Validar respuesta de conexiones
-      if (!connectionData || connectionData.status !== 0) {
-        return Promise.reject(
-          new Error(
-            `No se pudieron obtener las conexiones de LibreLink. Estado: ${connectionData?.status || "desconocido"}`
-          )
-        );
-      }
-
-      // Validar que existan conexiones
-      if (!connectionData.data || connectionData.data.length === 0) {
-        return Promise.reject(
-          new Error("No se encontraron conexiones asociadas a esta cuenta de LibreLink.")
-        );
-      }
-
-      // Construcción del objeto de retorno
-      return {
-        id: response.data.user.id,
-        email: response.data.user.email,
-        firstName: response.data.user.firstName,
-        lastName: response.data.user.lastName,
-        connections: connectionData.data,
-      };
+      return await this.fetchUserData(response);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Error desconocido";
       return Promise.reject(
         Error(`Error al autenticar con LibreLink: ${errorMessage}`, { cause: error })
       );
     }
+  }
+
+  private async fetchUserData(loginResponse: any): Promise<LibreUserData> {
+    const connectionData: LibreConnectionsResponse = await this.client!.fetchConnections();
+
+    if (!connectionData || connectionData.status !== 0) {
+      throw new Error(
+        `No se pudieron obtener las conexiones de LibreLink. Estado: ${connectionData?.status || "desconocido"}`
+      );
+    }
+
+    if (!connectionData.data || connectionData.data.length === 0) {
+      throw new Error("No se encontraron conexiones asociadas a esta cuenta de LibreLink.");
+    }
+
+    return {
+      id: loginResponse.data.user.id,
+      email: loginResponse.data.user.email,
+      firstName: loginResponse.data.user.firstName,
+      lastName: loginResponse.data.user.lastName,
+      connections: connectionData.data,
+    };
   }
 
   /**
